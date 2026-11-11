@@ -1,0 +1,28 @@
+.footer {
+  border-top: 1px solid var(--rule);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--s5) max(var(--gutter), env(safe-area-inset-left));
+  display: flex;
+  gap: var(--s5);
+  align-items: center;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.inner span {
+  font-family: var(--font-read);
+  font-weight: 600;
+  color: var(--ink);
+  margin-right: auto;
+}
+
+.inner a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}

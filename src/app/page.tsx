@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { Shelf } from "@/components/Shelf";
 import { SAMPLE_BOOKS } from "@/lib/sample/books";
 import { APP_TAGLINE } from "@/lib/brand";
@@ -19,6 +20,7 @@ export default function Home() {
         </section>
         <p className={s.note}>These are sample books for the design preview. Real books appear here once the database is connected.</p>
       </main>
+      <SiteFooter />
     </>
   );
 }

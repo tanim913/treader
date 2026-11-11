@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { getMe, safeNext } from "@/lib/auth";
 import { WelcomeForm } from "./WelcomeForm";
 import s from "@/components/auth/auth.module.css";
@@ -19,6 +20,7 @@ export default function WelcomePage({ searchParams }: PageProps<"/welcome">) {
           <Welcome searchParams={searchParams} />
         </Suspense>
       </main>
+      <SiteFooter />
     </>
   );
 }

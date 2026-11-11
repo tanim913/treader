@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { GoogleButton } from "@/components/auth/GoogleButton";
 import { safeNext } from "@/lib/auth";
 import s from "@/components/auth/auth.module.css";
@@ -25,6 +26,7 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
         </Suspense>
         <p className={s.fine}>You can read every book without an account.</p>
       </main>
+      <SiteFooter />
     </>
   );
 }

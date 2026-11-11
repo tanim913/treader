@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { MyBookmarks } from "@/components/bookmarks/MyBookmarks";
 import s from "./page.module.css";
 
@@ -17,6 +18,7 @@ export default function MePage() {
           <button type="submit">Sign out</button>
         </form>
       </main>
+      <SiteFooter />
     </>
   );
 }
