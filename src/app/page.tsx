@@ -31,7 +31,7 @@ async function Recent() {
   const sb = await supabaseServer();
   const { data } = await sb
     .from("books")
-    .select("slug, title, cloth, cover_url, completed, status, updated_at, profiles(display_name), chapters(count)")
+    .select("slug, title, cloth, cover_url, completed, status, updated_at, author:profiles!books_author_id_fkey(display_name), chapters(count)")
     .eq("status", "published")
     .eq("hidden_by_admin", false)
     .order("updated_at", { ascending: false })
@@ -39,7 +39,7 @@ async function Recent() {
   const books = (data ?? []).map((b) => ({
     href: `/b/${b.slug}`,
     title: b.title,
-    author: (b.profiles as unknown as { display_name: string } | null)?.display_name ?? "",
+    author: (b.author as unknown as { display_name: string } | null)?.display_name ?? "",
     cloth: b.cloth,
     coverUrl: b.cover_url,
     chapters: (b.chapters as { count: number }[] | null)?.[0]?.count ?? 0,

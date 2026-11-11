@@ -13,7 +13,7 @@ export async function getBook(slug: string) {
   const sb = await supabaseServer();
   const { data: book } = await sb
     .from("books")
-    .select("id, slug, title, blurb, cloth, cover_url, status, completed, author_id, profiles(display_name, handle)")
+    .select("id, slug, title, blurb, cloth, cover_url, status, completed, author_id, author:profiles!books_author_id_fkey(display_name, handle)")
     .eq("slug", slug)
     .maybeSingle();
   if (!book) return null;
@@ -27,7 +27,7 @@ export async function getBook(slug: string) {
   const chapters: LiveChapter[] = (rows ?? [])
     .filter((c) => own || isLive(c))
     .map((c) => ({ id: c.id, number: c.number, title: c.title, word_count: c.word_count, draft: !isLive(c) }));
-  const author = (book.profiles as unknown as { display_name: string; handle: string } | null) ?? { display_name: "", handle: "" };
+  const author = (book.author as unknown as { display_name: string; handle: string } | null) ?? { display_name: "", handle: "" };
   return { ...book, author, chapters, own };
 }
 
