@@ -1,0 +1,169 @@
+.text {
+  position: relative;
+  /* protected text: no native selection, no long-press menu */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* the reader's watermark, set by the reader */
+  background-image: var(--wm, none);
+  background-repeat: repeat;
+  transition: filter 0.2s linear;
+}
+
+.text p {
+  margin: 0;
+  text-indent: 1.3em;
+}
+
+.text p:first-child,
+.text hr + p {
+  text-indent: 0;
+}
+
+.text p:first-child::first-line {
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.04em;
+}
+
+.text hr {
+  border: 0;
+  height: 1px;
+  width: 2.5em;
+  margin: 1.4em auto;
+  background: var(--rule);
+}
+
+.text [data-bm] {
+  background: var(--mark);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  cursor: pointer;
+}
+
+.text [data-sel] {
+  background: var(--select);
+}
+
+.text [data-flash] {
+  animation: flash 2.4s var(--ease-out);
+}
+
+@keyframes flash {
+  0%, 35% { background: color-mix(in srgb, var(--gilt) 60%, transparent); }
+  100% { background: var(--mark); }
+}
+
+/* selection handles: a stem the height of the line and a knob */
+.handle {
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--cloth-ink);
+  touch-action: none;
+  cursor: ew-resize;
+  z-index: 4;
+}
+
+.handle::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: var(--cloth-ink);
+}
+
+.hStart::before { top: -11px; }
+.hEnd::before { bottom: -11px; }
+
+/* generous invisible touch target */
+.handle::after {
+  content: "";
+  position: absolute;
+  left: -21px;
+  right: -21px;
+  top: -22px;
+  bottom: -22px;
+}
+
+/* the popup that appears where the text was selected */
+.popup {
+  position: absolute;
+  z-index: 5;
+  width: min(330px, calc(100vw - 24px));
+  transform: translate(calc(-50% + var(--shift, 0px)), 0);
+  padding: var(--s3);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 14px 32px -12px rgba(0, 0, 0, 0.4);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.4;
+  text-indent: 0;
+  -webkit-user-select: text;
+  user-select: text;
+  animation: pop 0.22s var(--ease-out);
+}
+
+.above { transform: translate(calc(-50% + var(--shift, 0px)), -100%); }
+
+@keyframes pop {
+  from { opacity: 0; scale: 0.96; }
+  to { opacity: 1; scale: 1; }
+}
+
+.popLabel {
+  display: block;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 var(--s2);
+}
+
+.popNote {
+  display: block;
+  width: 100%;
+  min-height: 64px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  font: 16px/1.4 var(--font-ui); /* 16px stops iOS zooming in */
+}
+
+.popNote::placeholder { color: var(--ink-soft); }
+.popNote:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.popActions {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.popSpacer { flex: 1; }
+
+.popBtn {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.popBtn:hover { background: var(--paper-deep); }
+
+.popSave {
+  background: var(--cloth-ink);
+  color: var(--paper);
+}
+
+.popSave:hover { background: var(--cloth-ink); filter: brightness(1.1); }
+
+.popDanger { color: var(--danger); padding-left: 4px; }

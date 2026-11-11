@@ -166,3 +166,14 @@ img {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Printing a protected page prints only this notice. */
+@media print {
+  [data-protected] { display: none !important; }
+  body:has([data-protected])::before {
+    content: "Printing is turned off for this book.";
+    display: block;
+    padding: 48px;
+    font: 16px/1.5 system-ui, sans-serif;
+  }
+}

@@ -1,0 +1,19 @@
+.main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--s6) max(var(--gutter), env(safe-area-inset-left)) var(--s8);
+}
+
+.h1 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: clamp(28px, 7vw, 38px);
+  line-height: 1.15;
+  margin: 0 0 var(--s2);
+}
+
+.lede {
+  margin: 0 0 var(--s7);
+  color: var(--ink-soft);
+  font-size: 16px;
+}

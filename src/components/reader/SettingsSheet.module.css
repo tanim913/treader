@@ -11,6 +11,12 @@
   box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.35);
 }
 
+.tall {
+  max-height: 82dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .sheet[open] { animation: rise 0.36s var(--ease-out); }
 .sheet::backdrop { background: rgba(20, 18, 15, 0.35); }
 

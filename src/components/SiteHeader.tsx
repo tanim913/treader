@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PenLine } from "lucide-react";
+import { Bookmark, PenLine } from "lucide-react";
 import { APP_NAME } from "@/lib/brand";
 import s from "./SiteHeader.module.css";
 
@@ -12,6 +12,10 @@ export function SiteHeader() {
           <Link href="/write" className={s.link}>
             <PenLine size={17} strokeWidth={1.6} aria-hidden="true" />
             Write
+          </Link>
+ <Link href="/me" className={s.link} aria-label="Your bookmarks">
+            <Bookmark size={17} strokeWidth={1.6} aria-hidden="true" />
+            <span className={s.wide}>Bookmarks</span>
           </Link>
           <Link href="/login" className={`${s.link} ${s.primary}`}>Sign in</Link>
         </nav>

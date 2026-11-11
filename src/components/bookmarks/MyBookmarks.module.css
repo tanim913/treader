@@ -1,0 +1,34 @@
+.books {
+  display: grid;
+  gap: var(--s7);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--ink);
+}
+
+.board {
+  flex: none;
+  width: 26px;
+  height: 38px;
+  border-radius: 1px 3px 3px 1px;
+  box-shadow: var(--board-shadow);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 21px;
+  line-height: 1.2;
+}
+
+.count {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}

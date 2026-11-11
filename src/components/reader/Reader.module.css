@@ -1,5 +1,6 @@
 .page {
   --cloth-ink: color-mix(in srgb, var(--cloth) 62%, var(--ink));
+  --mark: color-mix(in srgb, var(--cloth) 16%, transparent);
   position: relative;
   min-height: 100dvh;
   background: var(--paper);
@@ -9,18 +10,6 @@
 .headband {
   height: calc(6px + env(safe-area-inset-top));
   background: var(--cloth);
-}
-
-/* silk ribbon marker: where the reader stopped */
-.ribbon {
-  position: absolute;
-  top: 0;
-  right: max(var(--gutter), env(safe-area-inset-right));
-  width: 14px;
-  height: calc(68px + env(safe-area-inset-top));
-  background: var(--cloth);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
-  box-shadow: 1px 0 0 rgba(0, 0, 0, 0.15);
 }
 
 .article {
@@ -69,29 +58,6 @@
     text-align: right;
   }
   .title { margin-top: 0; }
-}
-
-.text p {
-  margin: 0;
-  text-indent: 1.3em;
-}
-
-.text p:first-child,
-.text hr + p {
-  text-indent: 0;
-}
-
-.text p:first-child::first-line {
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.04em;
-}
-
-.text hr {
-  border: 0;
-  height: 1px;
-  width: 2.5em;
-  margin: 1.4em auto;
-  background: var(--rule);
 }
 
 /* end of chapter marks */
@@ -252,4 +218,38 @@
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
   text-align: center;
+}
+
+:global(:root[data-theme="dark"]) .page {
+  --mark: color-mix(in srgb, var(--gilt) 20%, transparent);
+  --cloth-ink: color-mix(in srgb, var(--cloth) 45%, var(--ink));
+}
+
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme])) .page {
+    --mark: color-mix(in srgb, var(--gilt) 20%, transparent);
+    --cloth-ink: color-mix(in srgb, var(--cloth) 45%, var(--ink));
+  }
+}
+
+/* veiled while the page is hidden or the window loses focus */
+.veilable { transition: filter 0.2s linear; }
+.page[data-veiled] .veilable { filter: blur(9px); }
+
+.withCount { position: relative; }
+
+.count {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--cloth-ink);
+  color: var(--paper);
+  font-size: 11px;
+  line-height: 17px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }

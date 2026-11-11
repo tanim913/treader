@@ -1,17 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Bookmark, ChevronLeft, ChevronRight, Type } from "lucide-react";
 import { clothOf } from "@/lib/cloth";
+import type { Block } from "@/lib/text";
+import { useBookmarks } from "@/lib/bookmarks/local";
 import { SettingsSheet } from "./SettingsSheet";
+import { BookmarksSheet } from "./BookmarksSheet";
+import { ChapterText } from "./ChapterText";
 import { DEFAULT_READ, applyRead, applyTheme, loadRead, loadTheme, type ReadSettings, type Theme } from "./settings";
+import { useProtection } from "./protection";
 import s from "./Reader.module.css";
 
 export type ReaderProps = {
+  bookId: string;
   bookTitle: string;
   bookHref: string;
   cloth: string;
+  chapterHref: string;
   chapterNumber: number;
   chapterCount: number;
   chapterTitle: string;
@@ -20,23 +27,36 @@ export type ReaderProps = {
   nextHref: string | null;
   /** "next" = more chapters published; "soon" = writer hasn't published more yet; "end" = book finished */
   ending: { kind: "next" } | { kind: "soon"; date?: string } | { kind: "end" };
-  children: ReactNode;
+  blocks: Block[];
+  /** The signed-in reader's name for the watermark; guests get a code. */
+  readerName?: string;
 };
 
 export function Reader(p: ReaderProps) {
   const [shown, setShown] = useState(false);
-  const [marked, setMarked] = useState(false);
   const [theme, setTheme] = useState<Theme>("system");
   const [read, setRead] = useState<ReadSettings>(DEFAULT_READ);
-  const sheet = useRef<HTMLDialogElement>(null);
+  const settings = useRef<HTMLDialogElement>(null);
+  const marksSheet = useRef<HTMLDialogElement>(null);
+  const page = useRef<HTMLDivElement>(null);
+  const textBox = useRef<HTMLDivElement>(null);
   const cloth = clothOf(p.cloth);
+
+  useProtection(page, textBox, p.readerName);
+
+  const all = useBookmarks();
+  const bookMarks = useMemo(() => all.filter((b) => b.bookId === p.bookId), [all, p.bookId]);
+  const meta = useMemo(() => ({
+    bookId: p.bookId, bookTitle: p.bookTitle, cloth: p.cloth,
+    chapterNumber: p.chapterNumber, chapterTitle: p.chapterTitle, href: p.chapterHref,
+  }), [p.bookId, p.bookTitle, p.cloth, p.chapterNumber, p.chapterTitle, p.chapterHref]);
 
   // Saved settings are applied before paint by the script in the root layout;
   // the sheet reads them when it opens.
   const openSettings = () => {
     setTheme(loadTheme());
     setRead(loadRead());
-    sheet.current?.showModal();
+    settings.current?.showModal();
   };
 
   // Scrolling on hides the controls again, so the page holds still for reading.
@@ -52,16 +72,15 @@ export function Reader(p: ReaderProps) {
   }, [shown]);
 
   const onTap = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest("a,button")) return;
+    if ((e.target as HTMLElement).closest("a,button,[data-ui]")) return;
     setShown((v) => !v);
   };
 
   const pct = Math.round((p.chapterNumber / p.chapterCount) * 100);
 
   return (
-    <div className={s.page} style={{ "--cloth": cloth.cloth } as CSSProperties}>
+    <div ref={page} className={s.page} style={{ "--cloth": cloth.cloth } as CSSProperties}>
       <div className={s.headband} aria-hidden="true" />
-      {marked && <div className={s.ribbon} aria-hidden="true" />}
 
       <div className={`${s.bar} ${s.top} ${shown ? "" : s.hidden}`} inert={!shown}>
         <div className={s.barInner}>
@@ -72,19 +91,22 @@ export function Reader(p: ReaderProps) {
           <button className={s.icon} aria-label="Reading settings" onClick={openSettings}>
             <Type size={20} strokeWidth={1.6} />
           </button>
-          <button className={s.icon} aria-label={marked ? "Remove bookmark" : "Bookmark this place"} aria-pressed={marked}
-            onClick={() => setMarked((m) => !m)}>
-            <Bookmark size={20} strokeWidth={1.6} fill={marked ? "currentColor" : "none"} />
+          <button className={`${s.icon} ${s.withCount}`} aria-label={`Bookmarks (${bookMarks.length})`}
+            onClick={() => marksSheet.current?.showModal()}>
+            <Bookmark size={20} strokeWidth={1.6} />
+            {bookMarks.length > 0 && <span className={s.count} aria-hidden="true">{bookMarks.length}</span>}
           </button>
         </div>
       </div>
 
-      <article className={s.article} onClick={onTap}>
+      <article className={s.article} onClick={onTap} data-protected>
         <header className={s.head}>
           <span className={s.number}>Chapter {p.chapterNumber}</span>
           <h1 className={s.title}>{p.chapterTitle}</h1>
         </header>
-        <div className={s.text}>{p.children}</div>
+        <div ref={textBox} className={s.veilable}>
+          <ChapterText blocks={p.blocks} meta={meta} bookmarks={bookMarks} />
+        </div>
 
         <footer className={s.end}>
           {p.ending.kind === "end" && (
@@ -117,7 +139,9 @@ export function Reader(p: ReaderProps) {
             <Link href={p.prevHref ?? "#"} className={s.navLink} aria-disabled={!p.prevHref}>
               <ChevronLeft size={18} strokeWidth={1.6} /> Previous
             </Link>
-            <span className={s.where} aria-label={`Chapter ${p.chapterNumber} of ${p.chapterCount}, ${p.minutesLeft} minutes left`}>{p.chapterNumber} of {p.chapterCount} · {p.minutesLeft} min left</span>
+            <span className={s.where} aria-label={`Chapter ${p.chapterNumber} of ${p.chapterCount}, ${p.minutesLeft} minutes left`}>
+              {p.chapterNumber} of {p.chapterCount} · {p.minutesLeft} min left
+            </span>
             <Link href={p.nextHref ?? "#"} className={s.navLink} aria-disabled={!p.nextHref}>
               Next <ChevronRight size={18} strokeWidth={1.6} />
             </Link>
@@ -126,12 +150,13 @@ export function Reader(p: ReaderProps) {
       </div>
 
       <SettingsSheet
-        ref={sheet}
+        ref={settings}
         theme={theme}
         read={read}
         onTheme={(t) => { setTheme(t); applyTheme(t); }}
         onRead={(r) => { setRead(r); applyRead(r); }}
       />
+      <BookmarksSheet ref={marksSheet} bookTitle={p.bookTitle} items={bookMarks} chapterHref={p.chapterHref} />
     </div>
   );
 }

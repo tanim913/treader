@@ -52,3 +52,6 @@
 .primary {
   border: 1px solid var(--ink);
 }
+
+.wide { display: none; }
+@media (min-width: 560px) { .wide { display: inline; } }
