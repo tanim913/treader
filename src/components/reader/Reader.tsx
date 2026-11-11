@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Bookmark, ChevronLeft, ChevronRight, Type } from "lucide-react";
+import { ShareButton } from "@/components/ShareButton";
 import { clothOf } from "@/lib/cloth";
 import type { Block } from "@/lib/text";
 import { useBookmarks } from "@/lib/bookmarks/local";
@@ -30,6 +31,10 @@ export type ReaderProps = {
   blocks: Block[];
   /** The signed-in reader's name for the watermark; guests get a code. */
   readerName?: string;
+  /** While the text is still on its way, or if it couldn't be loaded. */
+  textState?: "loading" | "error";
+  /** Path of this chapter, for the Share button. */
+  sharePath?: string;
 };
 
 export function Reader(p: ReaderProps) {
@@ -88,6 +93,7 @@ export function Reader(p: ReaderProps) {
             <ChevronLeft size={22} strokeWidth={1.6} />
           </Link>
           <span className={s.barTitle}>{p.bookTitle}</span>
+          {p.sharePath && <ShareButton path={p.sharePath} title={`${p.bookTitle}: ${p.chapterTitle}`} className={s.icon} iconOnly label="Share this chapter" />}
           <button className={s.icon} aria-label="Reading settings" onClick={openSettings}>
             <Type size={20} strokeWidth={1.6} />
           </button>
@@ -105,10 +111,16 @@ export function Reader(p: ReaderProps) {
           <h1 className={s.title}>{p.chapterTitle}</h1>
         </header>
         <div ref={textBox} className={s.veilable}>
-          <ChapterText blocks={p.blocks} meta={meta} bookmarks={bookMarks} />
+          {p.textState === "loading" ? (
+            <p className={s.textNote} aria-live="polite">Opening the chapter…</p>
+          ) : p.textState === "error" ? (
+            <p className={s.textNote} role="alert">This chapter couldn&rsquo;t be loaded. Check your connection and reload the page.</p>
+          ) : (
+            <ChapterText blocks={p.blocks} meta={meta} bookmarks={bookMarks} />
+          )}
         </div>
 
-        <footer className={s.end}>
+        {!p.textState && <footer className={s.end}>
           {p.ending.kind === "end" && (
             <>
               <p className={s.theEnd}>The End</p>
@@ -127,7 +139,7 @@ export function Reader(p: ReaderProps) {
           {p.ending.kind === "next" && p.nextHref && (
             <Link href={p.nextHref} className={s.navLink}>Next chapter <ChevronRight size={18} strokeWidth={1.6} /></Link>
           )}
-        </footer>
+        </footer>}
       </article>
 
       <div className={`${s.bar} ${s.bottom} ${shown ? "" : s.hidden}`} inert={!shown}>
