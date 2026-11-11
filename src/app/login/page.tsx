@@ -10,6 +10,7 @@ export const metadata: Metadata = { title: "Sign in" };
 const ERRORS: Record<string, string> = {
   "missing-code": "Google didn't send the sign-in back. Please try again.",
   "sign-in-failed": "That sign-in didn't go through. Please try again.",
+  provider: "Google sign-in is not set up correctly on our side yet. Please try again later.",
 };
 
 export default function LoginPage({ searchParams }: PageProps<"/login">) {

@@ -7,7 +7,12 @@ export async function GET(request: NextRequest) {
   const url = request.nextUrl;
   const code = url.searchParams.get("code");
   const next = safeNext(url.searchParams.get("next"));
-  if (!code) return NextResponse.redirect(new URL("/login?error=missing-code", url.origin));
+  if (!code) {
+    // Supabase reports provider failures as error / error_description; log them for the server output
+    const why = url.searchParams.get("error_description") ?? url.searchParams.get("error");
+    if (why) console.error("sign-in callback:", why);
+    return NextResponse.redirect(new URL(`/login?error=${why ? "provider" : "missing-code"}`, url.origin));
+  }
 
   const sb = await supabaseServer();
   const { data, error } = await sb.auth.exchangeCodeForSession(code);
