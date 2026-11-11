@@ -52,9 +52,10 @@ export default function PrivacyPage() {
 
         <h2>Your choices</h2>
         <p>
-          You can edit your profile, delete your bookmarks, comments and books at any time. To delete your
-          account and everything in it, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we
-          will do it within 30 days.
+          You can edit your profile and delete your bookmarks, comments and books at any time. You can delete
+          your account and everything in it yourself, from your profile page; it happens at once. If you
+          can&rsquo;t sign in any more, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we
+          will delete it within 30 days.
         </p>
 
         <h2>Contact</h2>

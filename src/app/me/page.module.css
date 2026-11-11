@@ -18,8 +18,25 @@
   font-size: 16px;
 }
 
-.signout { margin-top: var(--s8); padding-top: var(--s4); border-top: 1px solid var(--rule); }
-.signout button {
+.account {
+  margin-top: var(--s8);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--rule);
+  font-size: 15px;
+}
+
+.account h2 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 21px;
+  margin: 0 0 var(--s2);
+}
+
+.account p { margin: 0 0 var(--s4); color: var(--ink-soft); }
+
+.accountActions { display: grid; gap: var(--s4); justify-items: start; }
+
+.signoutBtn {
   min-height: 44px;
   padding: 0 var(--s4);
   border: 1px solid var(--rule);

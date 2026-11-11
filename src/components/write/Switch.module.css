@@ -1,0 +1,28 @@
+.switch {
+  flex: none;
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rule);
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out);
+}
+
+.switch[aria-checked="true"] { background: var(--ink); }
+.switch:disabled { opacity: 0.5; cursor: progress; }
+
+.knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.switch[aria-checked="true"] .knob { transform: translateX(20px); }
