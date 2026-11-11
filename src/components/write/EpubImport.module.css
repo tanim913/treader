@@ -1,0 +1,65 @@
+.drop {
+  display: grid;
+  justify-items: center;
+  gap: var(--s4);
+  padding: var(--s7) var(--s5);
+  border: 1px dashed var(--rule);
+  border-radius: 14px;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.drop p { margin: 0; max-width: 30em; font-size: 15px; }
+
+.coverRow { display: flex; gap: var(--s5); align-items: flex-start; flex-wrap: wrap; }
+
+.cover {
+  flex: none;
+  width: 96px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 2px 4px 4px 2px;
+  box-shadow: var(--board-shadow);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.check input,
+.chapter input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--ink);
+}
+
+.chapters {
+  list-style: none;
+  margin: var(--s2) 0 0;
+  padding: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  border-block: 1px solid var(--rule);
+}
+
+.chapters li + li { border-top: 1px solid var(--rule); }
+
+.chapter {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 48px;
+  padding: 8px 4px;
+  cursor: pointer;
+}
+
+.chTitle { font-family: var(--font-read); font-size: 16px; line-height: 1.3; overflow-wrap: anywhere; }
+.chWords { font-size: 13px; color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }

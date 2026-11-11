@@ -117,3 +117,34 @@ export async function deleteChapter(bookId: string, chapterId: string): Promise<
   if (error) return { error: "Couldn't delete the chapter." };
   redirect(`/write/${bookId}`);
 }
+
+// ---- EPUB import: the book first, then one call per chapter (keeps each request small)
+
+export async function createImportedBook(input: { title: string; blurb: string; cloth: string; rights: boolean }): Promise<Result & { id?: string; slug?: string }> {
+  const { sb, id } = await me();
+  if (!input.rights) return { error: "Please confirm you have the right to publish this book." };
+  const title = input.title.trim().slice(0, 160);
+  const blurb = input.blurb.trim().slice(0, 2000);
+  if (!title) return { error: "Give the book a title." };
+  const cloth = input.cloth in CLOTHS ? input.cloth : "oxblood";
+  const base = slugify(title);
+  for (let i = 0; i < 20; i++) {
+    const slug = i === 0 ? base : `${base}-${i + 1}`;
+    const { data, error } = await sb.from("books").insert({ author_id: id, slug, title, blurb, cloth }).select("id, slug").single();
+    if (!error) return { ok: true, id: data.id, slug: data.slug };
+    if (error.code !== "23505") return { error: "Couldn't create the book. Please try again." };
+  }
+  return { error: "Couldn't find a free web address for this title. Try a slightly different title." };
+}
+
+export async function addImportedChapter(bookId: string, number: number, title: string, content: TNode): Promise<Result> {
+  const { sb } = await me();
+  if (content?.type !== "doc" || !Array.isArray(content.content)) return { error: "That chapter couldn't be read." };
+  const { data, error } = await sb.from("chapters")
+    .insert({ book_id: bookId, number, title: title.trim().slice(0, 200) || `Chapter ${number}`, word_count: wordCount(content) })
+    .select("id").single();
+  if (error) return { error: `Couldn't add chapter ${number}.` };
+  const { error: bodyError } = await sb.from("chapter_bodies").insert({ chapter_id: data.id, content });
+  if (bodyError) return { error: `Couldn't save the text of chapter ${number}.` };
+  return { ok: true };
+}
