@@ -18,6 +18,8 @@ export type ChapterMeta = {
   chapterNumber: number;
   chapterTitle: string;
   href: string;
+  /** scramble key of this text (protected chapters) */
+  k?: number;
 };
 
 const LONG_PRESS_MS = 420;
@@ -288,6 +290,8 @@ export function ChapterText({ blocks, meta, bookmarks }: { blocks: Block[]; meta
     <div
       ref={box}
       className={s.text}
+      data-cipher={meta.k !== undefined ? "" : undefined}
+      style={meta.k !== undefined ? ({ "--cipher-serif": `tcs${meta.k}`, "--cipher-sans": `tca${meta.k}` } as React.CSSProperties) : undefined}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

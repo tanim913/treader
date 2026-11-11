@@ -39,5 +39,6 @@ export function applyRead(r: ReadSettings) {
   st.setProperty("--read-size", `${r.size}px`);
   st.setProperty("--read-leading", String(LEADING[r.leading]));
   st.setProperty("--font-read-active", r.face === "sans" ? "var(--font-ui)" : "var(--font-read)");
+  document.documentElement.dataset.face = r.face;
   try { localStorage.setItem("treader-read", JSON.stringify(r)); } catch {}
 }

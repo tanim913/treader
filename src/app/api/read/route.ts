@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { toBlocks, type TNode } from "@/lib/doc";
+import { randomKey, scrambleBlocks } from "@/lib/cipher";
 
 // Chapter text is never in the page source: the reader fetches it here.
 // Row-level security decides whether this visitor may see the chapter (live, or their own).
@@ -28,8 +29,9 @@ export async function GET(request: NextRequest) {
   const { data: body } = await supabaseAdmin().from("chapter_bodies").select("content").eq("chapter_id", c).maybeSingle();
   void sb.rpc("record_read", { c });
 
+  const k = randomKey();
   return NextResponse.json(
-    { blocks: toBlocks((body?.content ?? null) as TNode | null) },
+    { k, blocks: scrambleBlocks(toBlocks((body?.content ?? null) as TNode | null), k) },
     { headers: { "Cache-Control": "private, no-store", "X-Robots-Tag": "noindex" } },
   );
 }

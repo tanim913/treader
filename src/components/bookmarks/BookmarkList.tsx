@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { loadCipherFonts } from "@/lib/cipher/fonts";
 import type { Bookmark } from "@/lib/bookmarks/local";
 import s from "./BookmarkList.module.css";
 
@@ -12,6 +14,10 @@ export function BookmarkList({ items, onPick }: {
   /** Called before navigating; return true to handle the jump yourself. */
   onPick?: (b: Bookmark) => boolean;
 }) {
+  const keys = [...new Set(items.map((b) => b.k).filter((k): k is number => k !== undefined))].join(",");
+  useEffect(() => {
+    if (keys) keys.split(",").forEach((k) => { loadCipherFonts(Number(k)).catch(() => {}); });
+  }, [keys]);
   if (!items.length) {
     return (
       <p className={s.empty}>
@@ -29,7 +35,7 @@ export function BookmarkList({ items, onPick }: {
             onClick={(e) => { if (onPick?.(b)) e.preventDefault(); }}
           >
             <span className={s.where}>Chapter {b.chapterNumber} · {b.chapterTitle}</span>
-            <blockquote className={s.quote}>{b.quote}</blockquote>
+            <blockquote className={s.quote} style={b.k !== undefined ? { fontFamily: `tcs${b.k}` } : undefined}>{b.quote}</blockquote>
             {b.note && <p className={s.note}>{b.note}</p>}
           </Link>
         </li>

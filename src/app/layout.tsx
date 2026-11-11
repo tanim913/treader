@@ -27,7 +27,7 @@ export const viewport: Viewport = {
 };
 
 // Applies the reader's saved theme and reading settings before the first paint, so there is no flash.
-const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("treader-theme");if(t==="light"||t==="sepia"||t==="dark")d.dataset.theme=t;var r=JSON.parse(localStorage.getItem("treader-read")||"null");if(r){var L={compact:1.45,normal:1.62,loose:1.8};if(r.size)d.style.setProperty("--read-size",r.size+"px");if(L[r.leading])d.style.setProperty("--read-leading",L[r.leading]);if(r.face==="sans")d.style.setProperty("--font-read-active","var(--font-ui)")}}catch(e){}`;
+const themeScript = `try{var d=document.documentElement,t=localStorage.getItem("treader-theme");if(t==="light"||t==="sepia"||t==="dark")d.dataset.theme=t;var r=JSON.parse(localStorage.getItem("treader-read")||"null");if(r){var L={compact:1.45,normal:1.62,loose:1.8};if(r.size)d.style.setProperty("--read-size",r.size+"px");if(L[r.leading])d.style.setProperty("--read-leading",L[r.leading]);if(r.face==="sans"){d.style.setProperty("--font-read-active","var(--font-ui)");d.dataset.face="sans"}}}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

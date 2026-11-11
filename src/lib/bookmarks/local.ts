@@ -12,7 +12,8 @@ export type Bookmark = Range & {
   chapterNumber: number;
   chapterTitle: string;
   href: string;          // the chapter's path
-  quote: string;
+  quote: string;         // as written in the page (scrambled when k is set)
+  k?: number;            // scramble key; the quote shows in the matching font
   note: string;
   createdAt: string;
   updatedAt: string;

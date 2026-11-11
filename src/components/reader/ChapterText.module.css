@@ -25,6 +25,12 @@
   letter-spacing: 0.04em;
 }
 
+/* protected text: drawn only by its scrambled font. The fonts have no small caps,
+   and faked small caps would capitalise the scrambled letters, so plain first line. */
+.text[data-cipher] { font-family: var(--cipher-serif); }
+:global(:root[data-face="sans"]) .text[data-cipher] { font-family: var(--cipher-sans); }
+.text[data-cipher] p:first-child::first-line { font-variant-caps: normal; letter-spacing: normal; }
+
 .text hr {
   border: 0;
   height: 1px;

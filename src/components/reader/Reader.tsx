@@ -33,6 +33,8 @@ export type ReaderProps = {
   readerName?: string;
   /** While the text is still on its way, or if it couldn't be loaded. */
   textState?: "loading" | "error";
+  /** The scramble key of the text; the matching fonts are already loaded. */
+  cipherKey?: number;
   /** Path of this chapter, for the Share button. */
   sharePath?: string;
 };
@@ -53,8 +55,8 @@ export function Reader(p: ReaderProps) {
   const bookMarks = useMemo(() => all.filter((b) => b.bookId === p.bookId), [all, p.bookId]);
   const meta = useMemo(() => ({
     bookId: p.bookId, bookTitle: p.bookTitle, cloth: p.cloth,
-    chapterNumber: p.chapterNumber, chapterTitle: p.chapterTitle, href: p.chapterHref,
-  }), [p.bookId, p.bookTitle, p.cloth, p.chapterNumber, p.chapterTitle, p.chapterHref]);
+    chapterNumber: p.chapterNumber, chapterTitle: p.chapterTitle, href: p.chapterHref, k: p.cipherKey,
+  }), [p.bookId, p.bookTitle, p.cloth, p.chapterNumber, p.chapterTitle, p.chapterHref, p.cipherKey]);
 
   // Saved settings are applied before paint by the script in the root layout;
   // the sheet reads them when it opens.
