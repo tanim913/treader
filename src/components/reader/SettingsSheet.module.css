@@ -1,0 +1,123 @@
+.sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 480px;
+  border: 0;
+  border-radius: 16px 16px 0 0;
+  padding: var(--s2) var(--s5) calc(var(--s5) + env(safe-area-inset-bottom));
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  box-shadow: 0 -10px 30px -12px rgba(0, 0, 0, 0.35);
+}
+
+.sheet[open] { animation: rise 0.36s var(--ease-out); }
+.sheet::backdrop { background: rgba(20, 18, 15, 0.35); }
+
+@keyframes rise {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@media (min-width: 768px) {
+  .sheet { margin: auto; border-radius: 14px; }
+}
+
+.grip {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rule);
+  margin: 0 auto var(--s4);
+}
+
+.headRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--s2);
+}
+
+.headRow h2 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 19px;
+  margin: 0;
+}
+
+.close {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.close:hover { background: var(--paper-deep); }
+
+.group {
+  border: 0;
+  margin: 0;
+  padding: var(--s4) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.group legend {
+  float: left;
+  width: 100%;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: var(--s3);
+}
+
+.seg {
+  clear: both;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--s2);
+}
+
+.opt {
+  min-height: 44px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.opt[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.size {
+  clear: both;
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.size output {
+  text-align: center;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.serif { font-family: var(--font-read); }

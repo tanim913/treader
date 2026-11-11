@@ -1,49 +1,168 @@
+/* treader: Bookcloth and Stamp.
+   Colour lives at the edges (boards, headbands, ribbons); the reading
+   column is paper and ink only. */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* paper and ink (light) */
+  --paper: #f3efe6;
+  --paper-deep: #ebe5d8;      /* endpaper: the ground behind boards */
+  --ink: #23211d;
+  --ink-soft: #5f5a51;        /* 5.6:1 on paper */
+  --pencil: #6f6a61;          /* graphite marks: ticks, notes */
+  --rule: #d6cfc0;
+  --gilt: #c9a24a;
+  --focus: #26305a;
+  --danger: #8f2a1e;
+  --select: rgba(201, 162, 74, 0.32);
+
+  --font-read: var(--font-literata), "Iowan Old Style", Georgia, serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+
+  /* reading settings (changed by the reader) */
+  --read-size: 18px;
+  --read-leading: 1.62;
+  --read-measure: 34em;       /* about 65 characters */
+
+  /* spacing scale */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 72px;
+
+  --gutter: 16px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --board-shadow: 0 1px 1px rgba(35, 33, 29, 0.18), 0 6px 14px -6px rgba(35, 33, 29, 0.35);
+
+  color-scheme: light;
+}
+
+:root[data-theme="sepia"] {
+  --paper: #ebdfc6;
+  --paper-deep: #e1d3b6;
+  --ink: #33281b;
+  --ink-soft: #5f4e38;
+  --pencil: #6e604c;
+  --rule: #cdbd9c;
+  --select: rgba(143, 59, 30, 0.22);
+}
+
+:root[data-theme="dark"] {
+  --paper: #171614;
+  --paper-deep: #100f0e;
+  --ink: #dcd5c8;
+  --ink-soft: #a39b8d;
+  --pencil: #8f887c;
+  --rule: #2f2c28;
+  --focus: #c9a24a;
+  --danger: #e0806f;
+  --select: rgba(201, 162, 74, 0.28);
+  --board-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 8px 18px -8px rgba(0, 0, 0, 0.8);
+  color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not([data-theme]) {
+    --paper: #171614;
+    --paper-deep: #100f0e;
+    --ink: #dcd5c8;
+    --ink-soft: #a39b8d;
+    --pencil: #8f887c;
+    --rule: #2f2c28;
+    --focus: #c9a24a;
+    --danger: #e0806f;
+    --select: rgba(201, 162, 74, 0.28);
+    --board-shadow: 0 1px 1px rgba(0, 0, 0, 0.5), 0 8px 18px -8px rgba(0, 0, 0, 0.8);
+    color-scheme: dark;
   }
 }
 
-html {
-  height: 100%;
+@media (min-width: 768px) {
+  :root {
+    --read-size: 19px;
+    --gutter: 32px;
+  }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scrollbar-color: var(--rule) transparent;
+  scrollbar-width: thin;
+}
+
+body {
   margin: 0;
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums;
+}
+
+::selection {
+  background: var(--select);
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 a {
   color: inherit;
-  text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

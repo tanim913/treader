@@ -1,0 +1,16 @@
+.shelf {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s6) var(--s4);
+}
+
+@media (min-width: 560px) {
+  .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s7) var(--s5); }
+}
+
+@media (min-width: 1024px) {
+  .shelf { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
