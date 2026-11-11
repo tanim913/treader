@@ -17,3 +17,14 @@
   color: var(--ink-soft);
   font-size: 16px;
 }
+
+.signout { margin-top: var(--s8); padding-top: var(--s4); border-top: 1px solid var(--rule); }
+.signout button {
+  min-height: 44px;
+  padding: 0 var(--s4);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 15px;
+}

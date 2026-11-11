@@ -13,6 +13,9 @@ export default function MePage() {
         <h1 className={s.h1}>Your bookmarks</h1>
         <p className={s.lede}>Every passage you kept, book by book. Tap one to go straight back to that line.</p>
         <MyBookmarks />
+        <form action="/auth/signout" method="post" className={s.signout}>
+          <button type="submit">Sign out</button>
+        </form>
       </main>
     </>
   );

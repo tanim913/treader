@@ -55,3 +55,32 @@
 
 .wide { display: none; }
 @media (min-width: 560px) { .wide { display: inline; } }
+
+.slot { width: 44px; height: 44px; }
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+.avatar img,
+.avatar span {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.avatar span {
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-read);
+  font-size: 16px;
+}
