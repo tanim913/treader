@@ -1,7 +1,7 @@
 "use client";
 // One bookmark store for the whole app. Signed in: the reader's own rows in `notes`.
 // Guest: this browser only (./local.ts), moved into the account at sign-in.
-import { useEffect, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ensureImported } from "@/lib/guest-import";
 import { addLocal, readLocal, removeLocal, subscribeLocal, updateLocal } from "./local";
@@ -18,7 +18,6 @@ let remote: BookmarkState = NOT_READY;
 const listeners = new Set<() => void>();
 const setRemote = (items: Bookmark[]) => { remote = { items, ready: true }; listeners.forEach((l) => l()); };
 const subscribeRemote = (l: () => void) => { listeners.add(l); return () => { listeners.delete(l); }; };
-const getRemote = () => remote;
 
 async function load(userId: string) {
   owner = userId;
@@ -46,9 +45,12 @@ export function useBookmarkState(userId: string | null): BookmarkState {
   useEffect(() => {
     if (userId && owner !== userId) void load(userId);
   }, [userId]);
+  // Whose rows are loaded is checked when React reads the store, not when the page first drew:
+  // the load starts after the first render, and its result must still reach this component.
+  const getRemoteFor = useCallback(() => (owner === userId ? remote : NOT_READY), [userId]);
   return useSyncExternalStore(
     userId ? subscribeRemote : subscribeLocal,
-    userId ? (owner === userId ? getRemote : getServer) : getLocal,
+    userId ? getRemoteFor : getLocal,
     getServer,
   );
 }
