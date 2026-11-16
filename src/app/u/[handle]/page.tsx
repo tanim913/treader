@@ -78,7 +78,12 @@ async function ProfileView({ params }: { params: PageProps<"/u/[handle]">["param
         </p>
         <div className={s.actions}>
           {own ? (
-            <EditProfile name={p.displayName} handle={p.handle} bio={p.bio} />
+            <>
+              <EditProfile name={p.displayName} handle={p.handle} bio={p.bio} />
+              <form action="/auth/signout" method="post">
+                <button type="submit" className={`${s.follow} ${s.following}`}>Sign out</button>
+              </form>
+            </>
           ) : !p.banned ? (
             <FollowButton authorId={p.id} authorName={p.displayName} userId={me?.id ?? null} initial={following} />
           ) : null}
