@@ -2,7 +2,7 @@
 
 import { forwardRef } from "react";
 import { X } from "lucide-react";
-import { jumpToBookmark, type Bookmark } from "@/lib/bookmarks/local";
+import { jumpToBookmark, type Bookmark } from "@/lib/bookmarks/shape";
 import { BookmarkList } from "@/components/bookmarks/BookmarkList";
 import s from "./SettingsSheet.module.css";
 

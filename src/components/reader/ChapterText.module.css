@@ -13,6 +13,7 @@
 .text p {
   margin: 0;
   text-indent: 1.3em;
+  scroll-margin-top: 30vh; /* a resumed place lands a little above the middle */
 }
 
 .text p:first-child,
@@ -173,3 +174,23 @@
 .popSave:hover { background: var(--cloth-ink); filter: brightness(1.1); }
 
 .popDanger { color: var(--danger); padding-left: 4px; }
+
+/* a short message when a bookmark couldn't be saved (outside the scrambled font) */
+.problem {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--s5) + env(safe-area-inset-bottom));
+  z-index: 30;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100vw - 2 * var(--gutter));
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 14px/1.4 var(--font-ui);
+  text-indent: 0;
+}
+
+.problem[hidden] { display: none; }

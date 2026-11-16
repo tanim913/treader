@@ -2,12 +2,13 @@
 
 import { useMemo } from "react";
 import { clothOf } from "@/lib/cloth";
-import { useBookmarks, type Bookmark } from "@/lib/bookmarks/local";
+import { useBookmarkState } from "@/lib/bookmarks/store";
+import type { Bookmark } from "@/lib/bookmarks/shape";
 import { BookmarkList } from "./BookmarkList";
 import s from "./MyBookmarks.module.css";
 
-export function MyBookmarks() {
-  const all = useBookmarks();
+export function MyBookmarks({ userId }: { userId: string | null }) {
+  const { items: all, ready } = useBookmarkState(userId);
   const books = useMemo(() => {
     const map = new Map<string, Bookmark[]>();
     for (const b of all) map.set(b.bookId, [...(map.get(b.bookId) ?? []), b]);
@@ -16,6 +17,7 @@ export function MyBookmarks() {
       Math.max(...b.map((x) => Date.parse(x.createdAt))) - Math.max(...a.map((x) => Date.parse(x.createdAt))));
   }, [all]);
 
+  if (!ready) return <p className={s.loading} role="status">Finding your bookmarks…</p>;
   if (!books.length) return <BookmarkList items={[]} />;
 
   return (

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { Bookmark, ChevronLeft, ChevronRight, Type } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Type, X } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
 import { clothOf } from "@/lib/cloth";
 import type { Block } from "@/lib/text";
-import { useBookmarks } from "@/lib/bookmarks/local";
+import { useBookmarkState } from "@/lib/bookmarks/store";
+import { savePlace } from "@/lib/progress";
 import { SettingsSheet } from "./SettingsSheet";
 import { BookmarksSheet } from "./BookmarksSheet";
 import { ChapterText } from "./ChapterText";
@@ -15,7 +16,18 @@ import { useProtection } from "./protection";
 import s from "./Reader.module.css";
 
 export type ReaderProps = {
+  chapterId: string;
   bookId: string;
+  /** what a guest's saved place needs to draw the book on the home shelf */
+  book: { slug: string; coverUrl: string | null; author: string };
+  /** the next published chapter: finishing this one moves the reader's place there */
+  next: { id: string; number: number; title: string } | null;
+  /** the signed-in reader; null for guests */
+  userId: string | null;
+  /** scroll to this paragraph once the text is drawn (a Continue link) */
+  jumpTo?: number;
+  /** offer to go back to this paragraph (where the reader stopped in this chapter) */
+  offer?: number;
   bookTitle: string;
   bookHref: string;
   cloth: string;
@@ -51,12 +63,12 @@ export function Reader(p: ReaderProps) {
 
   useProtection(page, textBox, p.readerName);
 
-  const all = useBookmarks();
+  const all = useBookmarkState(p.userId).items;
   const bookMarks = useMemo(() => all.filter((b) => b.bookId === p.bookId), [all, p.bookId]);
   const meta = useMemo(() => ({
-    bookId: p.bookId, bookTitle: p.bookTitle, cloth: p.cloth,
+    chapterId: p.chapterId, bookId: p.bookId, bookTitle: p.bookTitle, cloth: p.cloth,
     chapterNumber: p.chapterNumber, chapterTitle: p.chapterTitle, href: p.chapterHref, k: p.cipherKey,
-  }), [p.bookId, p.bookTitle, p.cloth, p.chapterNumber, p.chapterTitle, p.chapterHref, p.cipherKey]);
+  }), [p.chapterId, p.bookId, p.bookTitle, p.cloth, p.chapterNumber, p.chapterTitle, p.chapterHref, p.cipherKey]);
 
   // Saved settings are applied before paint by the script in the root layout;
   // the sheet reads them when it opens.
@@ -77,6 +89,68 @@ export function Reader(p: ReaderProps) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [shown]);
+
+  // ---- the reader's place in the book
+  const textReady = !p.textState && p.blocks.length > 0;
+  const endRef = useRef<HTMLElement>(null);
+  const [offerGone, setOfferGone] = useState(false);
+  const showOffer = textReady && p.offer !== undefined && !offerGone;
+
+  const toPara = (n: number, smooth: boolean) => {
+    const el = textBox.current?.querySelector<HTMLElement>(`[data-p="${n}"]`);
+    el?.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "instant" });
+  };
+
+  // a Continue link (#p-12) opens at that paragraph
+  useEffect(() => {
+    if (textReady && p.jumpTo !== undefined) toPara(p.jumpTo, false);
+  }, [textReady, p.jumpTo]);
+
+  // Saves the place while reading. Nothing is saved until the reader has really moved
+  // (200px), so glancing at a chapter doesn't lose their place further on.
+  useEffect(() => {
+    if (!textReady) return;
+    const base = { bookId: p.bookId, slug: p.book.slug, bookTitle: p.bookTitle, cloth: p.cloth, coverUrl: p.book.coverUrl, author: p.book.author };
+    const startY = window.scrollY;
+    let armed = false;
+    let timer = 0;
+    const paragraph = () => {
+      const line = window.innerHeight * 0.3;
+      let at = 0;
+      for (const el of textBox.current?.querySelectorAll<HTMLElement>("[data-p]") ?? []) {
+        if (el.getBoundingClientRect().top > line) break;
+        at = Number(el.dataset.p);
+      }
+      return at;
+    };
+    const save = () => {
+      if (!armed) return;
+      const atEnd = (endRef.current?.getBoundingClientRect().top ?? Infinity) < window.innerHeight;
+      void savePlace(p.userId, atEnd && p.next
+        ? { ...base, chapterId: p.next.id, chapterNumber: p.next.number, chapterTitle: p.next.title, paragraph: 0, updatedAt: "" }
+        : { ...base, chapterId: p.chapterId, chapterNumber: p.chapterNumber, chapterTitle: p.chapterTitle, paragraph: paragraph(), updatedAt: "" });
+    };
+    const onScroll = () => {
+      if (!armed) {
+        if (Math.abs(window.scrollY - startY) < 200) return;
+        armed = true;
+        setOfferGone(true);
+      }
+      window.clearTimeout(timer);
+      timer = window.setTimeout(save, 1200);
+    };
+    const onHide = () => { if (document.visibilityState === "hidden") { window.clearTimeout(timer); save(); } };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("visibilitychange", onHide);
+    window.addEventListener("pagehide", save);
+    return () => {
+      window.clearTimeout(timer);
+      save();
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onHide);
+      window.removeEventListener("pagehide", save);
+    };
+  }, [textReady, p.userId, p.chapterId, p.chapterNumber, p.chapterTitle, p.next, p.bookId, p.book, p.bookTitle, p.cloth]);
 
   const onTap = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest("a,button,[data-ui]")) return;
@@ -118,11 +192,11 @@ export function Reader(p: ReaderProps) {
           ) : p.textState === "error" ? (
             <p className={s.textNote} role="alert">This chapter couldn&rsquo;t be loaded. Check your connection and reload the page.</p>
           ) : (
-            <ChapterText blocks={p.blocks} meta={meta} bookmarks={bookMarks} />
+            <ChapterText blocks={p.blocks} meta={meta} bookmarks={bookMarks} userId={p.userId} />
           )}
         </div>
 
-        {!p.textState && <footer className={s.end}>
+        {!p.textState && <footer ref={endRef} className={s.end}>
           {p.ending.kind === "end" && (
             <>
               <p className={s.theEnd}>The End</p>
@@ -162,6 +236,19 @@ export function Reader(p: ReaderProps) {
           </nav>
         </div>
       </div>
+
+      {showOffer && !shown && (
+        <div className={s.resume} data-ui role="region" aria-label="Your place">
+          <button type="button" className={s.resumeGo}
+            onClick={() => { setOfferGone(true); toPara(p.offer!, true); }}>
+            <span className={s.ribbon} aria-hidden="true" />
+            Resume where you left off
+          </button>
+          <button type="button" className={s.resumeX} aria-label="Stay at the top" onClick={() => setOfferGone(true)}>
+            <X size={18} strokeWidth={1.6} />
+          </button>
+        </div>
+      )}
 
       <SettingsSheet
         ref={settings}

@@ -5,6 +5,7 @@ import { ReaderLoader } from "@/components/reader/ReaderLoader";
 import { fmtDay, getBook, nextScheduled } from "@/lib/books";
 import { getMe } from "@/lib/auth";
 import { minutesFor } from "@/lib/doc";
+import { getPlace } from "@/lib/places";
 
 export async function generateMetadata({ params }: PageProps<"/b/[slug]/[n]">): Promise<Metadata> {
   const { slug, n } = await params;
@@ -32,7 +33,10 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
   const prev = book.chapters[i - 1];
   const next = book.chapters[i + 1];
   const left = book.chapters.slice(i).reduce((a, c) => a + c.word_count, 0);
-  const soon = !next && !book.completed ? await nextScheduled(book.id) : null;
+  const [soon, saved] = await Promise.all([
+    !next && !book.completed ? nextScheduled(book.id) : null,
+    me ? getPlace(book.id) : null,
+  ]);
   const base = `/b/${book.slug}`;
 
   return (
@@ -40,6 +44,10 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
       key={ch.id}
       chapterId={ch.id}
       bookId={book.id}
+      book={{ slug: book.slug, coverUrl: book.cover_url, author: book.author.display_name }}
+      next={next && !next.draft ? { id: next.id, number: next.number, title: next.title } : null}
+      userId={me?.id ?? null}
+      saved={saved ? { chapterId: saved.chapterId, paragraph: saved.paragraph } : null}
       bookTitle={book.title}
       bookHref={base}
       cloth={book.cloth}

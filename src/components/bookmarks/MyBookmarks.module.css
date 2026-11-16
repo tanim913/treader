@@ -32,3 +32,5 @@
   font-size: 13px;
   color: var(--ink-soft);
 }
+
+.loading { margin: 0; color: var(--ink-soft); }

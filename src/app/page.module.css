@@ -38,3 +38,5 @@
   font-size: 14px;
   color: var(--ink-soft);
 }
+
+.section + .section { margin-top: var(--s7); }

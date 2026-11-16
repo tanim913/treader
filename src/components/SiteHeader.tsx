@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Bookmark, PenLine } from "lucide-react";
 import { APP_NAME } from "@/lib/brand";
 import { getMe } from "@/lib/auth";
+import { GuestImport } from "./GuestImport";
 import s from "./SiteHeader.module.css";
 
 export function SiteHeader() {
@@ -33,6 +34,8 @@ async function Account() {
   if (!me) return <Link href="/login" className={`${s.link} ${s.primary}`}>Sign in</Link>;
   const initial = me.displayName.trim().charAt(0).toUpperCase() || "?";
   return (
+    <>
+    <GuestImport userId={me.id} />
     <Link href="/me" className={s.avatar} aria-label={`Your profile, ${me.displayName}`}>
       {me.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -41,5 +44,6 @@ async function Account() {
         <span>{initial}</span>
       )}
     </Link>
+    </>
   );
 }

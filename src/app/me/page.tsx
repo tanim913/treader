@@ -17,7 +17,9 @@ export default function MePage() {
       <main className={s.main}>
         <h1 className={s.h1}>Your bookmarks</h1>
         <p className={s.lede}>Every passage you kept, book by book. Tap one to go straight back to that line.</p>
-        <MyBookmarks />
+        <Suspense fallback={<p className={s.lede} role="status">Finding your bookmarks…</p>}>
+          <Bookmarks />
+        </Suspense>
         <Suspense>
           <Account />
         </Suspense>
@@ -27,12 +29,17 @@ export default function MePage() {
   );
 }
 
+async function Bookmarks() {
+  const me = await getMe();
+  return <MyBookmarks userId={me?.id ?? null} />;
+}
+
 async function Account() {
   const me = await getMe();
   if (!me) {
     return (
       <section className={s.account}>
-        <p>Bookmarks are kept in this browser. <Link href="/login?next=/me">Sign in</Link> to keep them on every device.</p>
+        <p>You aren&rsquo;t signed in, so these bookmarks are kept in this browser only. <Link href="/login?next=/me">Sign in</Link> to keep them in your account, on every device.</p>
       </section>
     );
   }

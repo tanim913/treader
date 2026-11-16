@@ -23,3 +23,6 @@ export function scrambleBlocks(blocks: Block[], k: number): Block[] {
   const m = tables[k];
   return blocks.map((b) => (b.type === "p" ? { type: "p", runs: b.runs.map((r) => ({ ...r, t: scramble(r.t, m) })) } : b));
 }
+
+/** Scrambles one string with key k (a saved bookmark's quote). */
+export const scrambleText = (t: string, k: number) => scramble(t, tables[k]);

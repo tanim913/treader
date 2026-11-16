@@ -1,78 +1,55 @@
 "use client";
-// Bookmarks kept in this browser until Supabase is connected (milestone 3);
-// the same interface will then read and write the private `notes` table.
-import { useSyncExternalStore } from "react";
-import type { Range } from "@/lib/text";
-
-export type Bookmark = Range & {
-  id: string;
-  bookId: string;
-  bookTitle: string;
-  cloth: string;
-  chapterNumber: number;
-  chapterTitle: string;
-  href: string;          // the chapter's path
-  quote: string;         // as written in the page (scrambled when k is set)
-  k?: number;            // scramble key; the quote shows in the matching font
-  note: string;
-  createdAt: string;
-  updatedAt: string;
-};
+// Bookmarks of a reader who isn't signed in, kept in this browser only.
+// When they sign in, these move into their account and are cleared from the browser.
+import type { Bookmark, NewBookmark } from "./shape";
 
 const KEY = "treader-bookmarks";
 const EMPTY: Bookmark[] = [];
 let cache: Bookmark[] | null = null;
 const listeners = new Set<() => void>();
 
-function read(): Bookmark[] {
+export function readLocal(): Bookmark[] {
   if (cache) return cache;
   try {
-    cache = JSON.parse(localStorage.getItem(KEY) || "[]") as Bookmark[];
+    const parsed = JSON.parse(localStorage.getItem(KEY) || "[]");
+    cache = Array.isArray(parsed) ? (parsed as Bookmark[]) : EMPTY;
   } catch {
-    cache = [];
+    cache = EMPTY;
   }
   return cache;
 }
 
 function write(next: Bookmark[]) {
   cache = next;
-  try { localStorage.setItem(KEY, JSON.stringify(next)); } catch {}
+  try {
+    if (next.length) localStorage.setItem(KEY, JSON.stringify(next));
+    else localStorage.removeItem(KEY);
+  } catch {}
   listeners.forEach((l) => l());
 }
 
-function subscribe(l: () => void) {
+export function subscribeLocal(l: () => void) {
   listeners.add(l);
   const onStorage = (e: StorageEvent) => { if (e.key === KEY) { cache = null; l(); } };
   window.addEventListener("storage", onStorage);
   return () => { listeners.delete(l); window.removeEventListener("storage", onStorage); };
 }
 
-export function useBookmarks(): Bookmark[] {
-  return useSyncExternalStore(subscribe, read, () => EMPTY);
-}
-
-export function addBookmark(b: Omit<Bookmark, "id" | "createdAt" | "updatedAt">): Bookmark {
+export function addLocal(b: NewBookmark): Bookmark {
   const now = new Date().toISOString();
   const full: Bookmark = { ...b, id: crypto.randomUUID(), createdAt: now, updatedAt: now };
-  write([...read(), full]);
+  write([...readLocal(), full]);
   return full;
 }
 
-export function updateNote(id: string, note: string) {
-  write(read().map((b) => (b.id === id ? { ...b, note, updatedAt: new Date().toISOString() } : b)));
+export function updateLocal(id: string, note: string) {
+  write(readLocal().map((b) => (b.id === id ? { ...b, note, updatedAt: new Date().toISOString() } : b)));
 }
 
-export function removeBookmark(id: string) {
-  write(read().filter((b) => b.id !== id));
+export function removeLocal(id: string) {
+  write(readLocal().filter((b) => b.id !== id));
 }
 
-/** Scrolls to a bookmark on the current page and makes it glow for a moment. */
-export function jumpToBookmark(id: string): boolean {
-  const first = document.getElementById(`bm-${id}`);
-  if (!first) return false;
-  first.scrollIntoView({ block: "center", behavior: "smooth" });
-  const parts = document.querySelectorAll<HTMLElement>(`[data-bm="${id}"]`);
-  parts.forEach((el) => el.setAttribute("data-flash", ""));
-  window.setTimeout(() => parts.forEach((el) => el.removeAttribute("data-flash")), 2400);
-  return true;
+export function clearLocal() {
+  write(EMPTY);
 }

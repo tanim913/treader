@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { loadCipherFonts } from "@/lib/cipher/fonts";
-import type { Bookmark } from "@/lib/bookmarks/local";
+import type { Bookmark } from "@/lib/bookmarks/shape";
 import s from "./BookmarkList.module.css";
 
 const byPlace = (a: Bookmark, b: Bookmark) =>

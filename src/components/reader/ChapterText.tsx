@@ -2,7 +2,8 @@
 
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { cmp, quoteOf, sliceIn, tokenize, type Block, type Pos, type Range } from "@/lib/text";
-import { addBookmark, jumpToBookmark, removeBookmark, updateNote, type Bookmark } from "@/lib/bookmarks/local";
+import { addBookmark, removeBookmark, updateNote } from "@/lib/bookmarks/store";
+import { jumpToBookmark, type Bookmark } from "@/lib/bookmarks/shape";
 import { SelectionPopup } from "./SelectionPopup";
 import s from "./ChapterText.module.css";
 
@@ -12,6 +13,7 @@ type Popup = { kind: "new" } | { kind: "edit"; id: string };
 type Place = { x: number; y: number; below: boolean; handles: { sx: number; sy: number; sh: number; ex: number; ey: number; eh: number } | null };
 
 export type ChapterMeta = {
+  chapterId: string;
   bookId: string;
   bookTitle: string;
   cloth: string;
@@ -74,8 +76,15 @@ const Para = memo(function Para({ p, block, sel, marks }: {
   );
 });
 
-export function ChapterText({ blocks, meta, bookmarks }: { blocks: Block[]; meta: ChapterMeta; bookmarks: Bookmark[] }) {
+export function ChapterText({ blocks, meta, bookmarks, userId }: {
+  blocks: Block[];
+  meta: ChapterMeta;
+  bookmarks: Bookmark[];
+  /** the signed-in reader; bookmarks go to their account. Guests keep them in this browser. */
+  userId: string | null;
+}) {
   const box = useRef<HTMLDivElement>(null);
+  const [problem, setProblem] = useState<string | null>(null);
   const [range, setRange] = useState<Range | null>(null);
   const [popup, setPopup] = useState<Popup | null>(null);
   const [place, setPlace] = useState<Place | null>(null);
@@ -267,15 +276,25 @@ export function ChapterText({ blocks, meta, bookmarks }: { blocks: Block[]; meta
   };
   const onHandleUp = () => endDrag();
 
+  const report = (p: Promise<string | null>) => {
+    setProblem(null);
+    void p.then((err) => { if (err) setProblem(err); });
+  };
   const save = (note: string) => {
-    if (popup?.kind === "edit") updateNote(popup.id, note);
-    else if (range) addBookmark({ ...meta, ...range, quote: quoteOf(blocks, range), note });
+    if (popup?.kind === "edit") report(updateNote(userId, popup.id, note));
+    else if (range) report(addBookmark(userId, { ...meta, ...range, quote: quoteOf(blocks, range), note }));
     clear();
   };
   const del = () => {
-    if (popup?.kind === "edit") removeBookmark(popup.id);
+    if (popup?.kind === "edit") report(removeBookmark(userId, popup.id));
     clear();
   };
+
+  useEffect(() => {
+    if (!problem) return;
+    const t = window.setTimeout(() => setProblem(null), 6000);
+    return () => window.clearTimeout(t);
+  }, [problem]);
 
   useEffect(() => {
     if (!popup) return;
@@ -318,6 +337,8 @@ export function ChapterText({ blocks, meta, bookmarks }: { blocks: Block[]; meta
             aria-hidden="true" />
         </>
       )}
+
+      <div className={s.problem} role="status" data-ui hidden={!problem}>{problem}</div>
 
       {popup && place && (
         <SelectionPopup

@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { supabaseServer } from "./supabase/server";
 
 export type Me = {
@@ -11,7 +12,7 @@ export type Me = {
 };
 
 /** The signed-in reader's profile, or null. Reads cookies: call it inside a Suspense boundary. */
-export async function getMe(): Promise<Me | null> {
+export const getMe = cache(async (): Promise<Me | null> => {
   const sb = await supabaseServer();
   const { data: claims } = await sb.auth.getClaims();
   const id = claims?.claims?.sub;
@@ -30,7 +31,7 @@ export async function getMe(): Promise<Me | null> {
     avatarUrl: data.avatar_url,
     role: data.role,
   };
-}
+});
 
 /** Only same-site paths are allowed as a return address after sign-in. */
 export function safeNext(next: string | null | undefined): string {

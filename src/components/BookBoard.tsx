@@ -11,6 +11,8 @@ export type BookCard = {
   coverUrl?: string | null;
   chapters: number;
   completed: boolean;
+  /** replaces the chapter count and status, e.g. "Chapter 5" on the Continue reading shelf */
+  note?: string;
 };
 
 /** The cloth board (or uploaded cover) on its own. */
@@ -37,9 +39,15 @@ export function BookBoard({ book }: { book: BookCard }) {
       <BookCover title={book.title} author={book.author} cloth={book.cloth} coverUrl={book.coverUrl} />
       <div className={s.meta}>
         <span className={s.name}>{book.title}</span>
-        <span>{book.chapters} {book.chapters === 1 ? "chapter" : "chapters"}</span>
-        <span aria-hidden="true">·</span>
-        <span>{book.completed ? "Complete" : "Ongoing"}</span>
+        {book.note ? (
+          <span>{book.note}</span>
+        ) : (
+          <>
+            <span>{book.chapters} {book.chapters === 1 ? "chapter" : "chapters"}</span>
+            <span aria-hidden="true">·</span>
+            <span>{book.completed ? "Complete" : "Ongoing"}</span>
+          </>
+        )}
       </div>
     </Link>
   );

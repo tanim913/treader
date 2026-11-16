@@ -261,3 +261,65 @@
   font-size: 15px;
   color: var(--ink-soft);
 }
+
+/* "Resume where you left off": a flat slip at the foot of the page, marked with the book's ribbon */
+.resume {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--s5) + env(safe-area-inset-bottom));
+  z-index: 15;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: stretch;
+  max-width: calc(100vw - 2 * var(--gutter));
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  animation: slip 0.32s var(--ease-out);
+}
+
+@keyframes slip {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+}
+
+.resumeGo,
+.resumeX {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.resumeGo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px 0 16px;
+  white-space: nowrap;
+}
+
+.resumeX {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  color: var(--ink-soft);
+}
+
+.resumeGo:focus-visible,
+.resumeX:focus-visible { outline: 2px solid var(--focus); outline-offset: -2px; border-radius: 999px; }
+
+.ribbon {
+  width: 8px;
+  height: 18px;
+  background: var(--cloth);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume { animation: none; }
+}

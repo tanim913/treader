@@ -8,6 +8,9 @@ import { BookCover } from "@/components/BookBoard";
 import { ShareButton } from "@/components/ShareButton";
 import { fmtDay, getBook, nextScheduled } from "@/lib/books";
 import { minutesFor } from "@/lib/doc";
+import { getMe } from "@/lib/auth";
+import { getPlace } from "@/lib/places";
+import { ContinueButton } from "@/components/progress/ContinueButton";
 import s from "./book.module.css";
 
 export async function generateMetadata({ params }: PageProps<"/b/[slug]">): Promise<Metadata> {
@@ -35,7 +38,11 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
   const { slug } = await params;
   const book = await getBook(slug);
   if (!book) notFound();
-  const soon = !book.completed ? await nextScheduled(book.id) : null;
+  const me = await getMe();
+  const [soon, saved] = await Promise.all([
+    !book.completed ? nextScheduled(book.id) : null,
+    me ? getPlace(book.id) : null,
+  ]);
   const first = book.chapters[0];
   const count = book.chapters.length;
   const draft = book.status !== "published";
@@ -59,7 +66,14 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
           {book.blurb && <p className={s.blurb}>{book.blurb}</p>}
           <div className={s.actions}>
             {first ? (
-              <Link href={`/b/${book.slug}/${first.number}`} className={`${s.btn} ${s.primary}`}>Start reading</Link>
+              <ContinueButton
+                slug={book.slug}
+                bookId={book.id}
+                numbers={book.chapters.map((c) => c.number)}
+                saved={saved}
+                signedIn={!!me}
+                className={`${s.btn} ${s.primary}`}
+              />
             ) : (
               <span className={s.meta}>The first chapter is on its way.</span>
             )}
