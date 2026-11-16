@@ -1,0 +1,304 @@
+.main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--s6) max(var(--gutter), env(safe-area-inset-left)) var(--s8);
+}
+
+.loading { color: var(--ink-soft); }
+
+/* ---- header: name, handle, bio, counts, one action */
+.head {
+  display: grid;
+  gap: var(--s3);
+  max-width: 640px;
+  padding-bottom: var(--s6);
+  border-bottom: 1px solid var(--ink);
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+}
+
+.name {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: clamp(26px, 7vw, 36px);
+  line-height: 1.12;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.handle {
+  margin: 2px 0 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.bio {
+  margin: 0;
+  font-family: var(--font-read);
+  font-size: 17px;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--s2);
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.counts strong { color: var(--ink); font-weight: 600; }
+
+.countLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.countLink:hover span { text-decoration: underline; }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.suspended {
+  margin: 0;
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  color: var(--ink-soft);
+}
+
+/* ---- shared buttons */
+.follow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 112px;
+  padding: 0 var(--s5);
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 500 15px var(--font-ui);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.follow:hover { filter: brightness(1.2); }
+.follow:disabled { cursor: progress; }
+
+/* already following: a plain outline, so the next tap reads as undoing it */
+.following {
+  background: transparent;
+  color: var(--ink);
+}
+
+.following:hover { filter: none; background: var(--paper-deep); }
+
+.problem { font-size: 14px; color: var(--danger); }
+
+.avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-read);
+  line-height: 1;
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---- sections */
+.section { margin-top: var(--s7); }
+
+.section h2 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 22px;
+  margin: 0 0 var(--s5);
+}
+
+.private {
+  margin-top: var(--s8);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--rule);
+}
+
+.private > h2 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 22px;
+  margin: 0;
+}
+
+.privateNote {
+  margin: var(--s1) 0 0;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.sub {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: var(--s6) 0 var(--s4);
+}
+
+.empty { margin: 0; color: var(--ink-soft); }
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin-top: var(--s6);
+  padding: var(--s4) 0;
+  border-top: 1px solid var(--rule);
+  max-width: 640px;
+}
+
+.switchLabel { margin: 0; font-size: 16px; }
+.switchHint { margin: var(--s1) 0 0; font-size: 14px; color: var(--ink-soft); }
+
+.recent { max-width: 640px; }
+
+/* ---- edit sheet */
+.editForm { margin-top: var(--s3); }
+
+.bioInput {
+  min-height: 96px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  font: 16px/1.45 var(--font-ui);
+  resize: vertical;
+}
+
+.bioInput:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+/* ---- followers / following lists */
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  font-size: 15px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--s2);
+  margin: var(--s3) 0 var(--s5);
+  border-bottom: 1px solid var(--rule);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s2);
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 15px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.tab[aria-current="page"] { color: var(--ink); border-bottom-color: var(--ink); }
+
+.people {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 640px;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 64px;
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--rule);
+  color: inherit;
+  text-decoration: none;
+}
+
+.person:hover .personName { text-decoration: underline; }
+
+.personText { display: grid; min-width: 0; }
+.personName { font-family: var(--font-read); font-size: 17px; }
+.personHandle { font-size: 14px; color: var(--ink-soft); }
+.personBio {
+  font-size: 14px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- new chapters from followed writers (home) */
+.chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 680px;
+  border-top: 1px solid var(--ink);
+}
+
+.chapterRow {
+  display: grid;
+  grid-template-columns: 6px 1fr;
+  gap: var(--s3);
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.band { border-radius: 1px; background: var(--cloth); }
+
+.chapterLink {
+  display: grid;
+  gap: 2px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.chapterLink:hover .chTitle { text-decoration: underline; text-decoration-color: var(--rule); }
+
+.chTitle { font-family: var(--font-read); font-size: 18px; line-height: 1.3; }
+.chMeta { font-size: 14px; color: var(--ink-soft); }

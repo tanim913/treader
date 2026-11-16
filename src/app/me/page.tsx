@@ -46,7 +46,7 @@ async function Account() {
   return (
     <section className={s.account} aria-labelledby="account">
       <h2 id="account">Account</h2>
-      <p>Signed in as <strong>{me.displayName}</strong> (@{me.handle}).</p>
+      <p>Signed in as <strong>{me.displayName}</strong> (@{me.handle}). <Link href={`/@${me.handle}`}>Your profile</Link></p>
       <div className={s.accountActions}>
         <form action="/auth/signout" method="post">
           <button type="submit" className={s.signoutBtn}>Sign out</button>

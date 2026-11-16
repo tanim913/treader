@@ -11,6 +11,9 @@ import { minutesFor } from "@/lib/doc";
 import { getMe } from "@/lib/auth";
 import { getPlace } from "@/lib/places";
 import { ContinueButton } from "@/components/progress/ContinueButton";
+import { FollowButton } from "@/components/profile/FollowButton";
+import { isFollowing } from "@/lib/profiles";
+import { profileHref } from "@/lib/paths";
 import s from "./book.module.css";
 
 export async function generateMetadata({ params }: PageProps<"/b/[slug]">): Promise<Metadata> {
@@ -39,9 +42,10 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
   const book = await getBook(slug);
   if (!book) notFound();
   const me = await getMe();
-  const [soon, saved] = await Promise.all([
+  const [soon, saved, following] = await Promise.all([
     !book.completed ? nextScheduled(book.id) : null,
     me ? getPlace(book.id) : null,
+    me && !book.own ? isFollowing(me.id, book.author_id) : false,
   ]);
   const first = book.chapters[0];
   const count = book.chapters.length;
@@ -59,7 +63,7 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
         </div>
         <div className={s.info}>
           <h1 className={s.title}>{book.title}</h1>
-          <p className={s.by}>by {book.author.display_name}</p>
+          <p className={s.by}>by <Link href={profileHref(book.author.handle)} className={s.byLink}>{book.author.display_name}</Link></p>
           <p className={s.meta}>
             {count} {count === 1 ? "chapter" : "chapters"} · {book.completed ? "Complete" : "Ongoing"}
           </p>
@@ -78,6 +82,10 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
               <span className={s.meta}>The first chapter is on its way.</span>
             )}
             <ShareButton path={`/b/${book.slug}`} title={book.title} className={s.btn} />
+            {!book.own && (
+              <FollowButton authorId={book.author_id} authorName={book.author.display_name}
+                userId={me?.id ?? null} initial={following} quiet className={s.followBtn} />
+            )}
           </div>
         </div>
       </section>

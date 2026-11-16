@@ -24,6 +24,8 @@ export type ReaderProps = {
   next: { id: string; number: number; title: string } | null;
   /** the signed-in reader; null for guests */
   userId: string | null;
+  /** the writer, for "Follow …" at the end of an unfinished book (null on the writer's own book) */
+  author: { name: string; href: string } | null;
   /** scroll to this paragraph once the text is drawn (a Continue link) */
   jumpTo?: number;
   /** offer to go back to this paragraph (where the reader stopped in this chapter) */
@@ -209,7 +211,11 @@ export function Reader(p: ReaderProps) {
                 <strong>Coming soon</strong>
                 <span>{p.ending.date ? `Next chapter ${p.ending.date}` : "The next chapter is being written"}</span>
               </div>
-              <p className={s.endNote}>Follow the writer to hear when it arrives.</p>
+              {p.author && (
+                <p className={s.endNote}>
+                  <Link href={p.author.href} className={s.endLink}>Follow {p.author.name}</Link> to see new chapters on your home page.
+                </p>
+              )}
             </>
           )}
           {p.ending.kind === "next" && p.nextHref && (

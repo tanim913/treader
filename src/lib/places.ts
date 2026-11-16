@@ -17,7 +17,8 @@ export async function getPlace(bookId: string): Promise<SavedPlace | null> {
 }
 
 export type ShelfPlace = SavedPlace & {
-  slug: string; title: string; cloth: string; coverUrl: string | null; author: string; completed: boolean; chapters: number;
+  slug: string; title: string; cloth: string; coverUrl: string | null; author: string; authorHandle: string;
+  completed: boolean; chapters: number;
 };
 
 /** The books the signed-in reader is in the middle of, most recent first. */
@@ -28,14 +29,14 @@ export async function getMyPlaces(limit = 8): Promise<ShelfPlace[]> {
   const { data } = await sb
     .from("reading_progress")
     .select("chapter_id, paragraph, updated_at, chapter:chapters(number, title), " +
-      "book:books(slug, title, cloth, cover_url, completed, author:profiles!books_author_id_fkey(display_name), chapters(count))")
+      "book:books(slug, title, cloth, cover_url, completed, author:profiles!books_author_id_fkey(display_name, handle), chapters(count))")
     .order("updated_at", { ascending: false })
     .limit(limit);
   type Row = {
     chapter_id: string; paragraph: number;
     chapter: { number: number; title: string } | null;
     book: { slug: string; title: string; cloth: string; cover_url: string | null; completed: boolean;
-      author: { display_name: string } | null; chapters: { count: number }[] } | null;
+      author: { display_name: string; handle: string } | null; chapters: { count: number }[] } | null;
   };
   return ((data ?? []) as unknown as Row[])
     .filter((r) => r.book && r.chapter)
@@ -49,6 +50,7 @@ export async function getMyPlaces(limit = 8): Promise<ShelfPlace[]> {
       cloth: r.book!.cloth,
       coverUrl: r.book!.cover_url,
       author: r.book!.author?.display_name ?? "",
+      authorHandle: r.book!.author?.handle ?? "",
       completed: r.book!.completed,
       chapters: r.book!.chapters?.[0]?.count ?? 0,
     }));

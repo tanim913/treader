@@ -323,3 +323,10 @@
 @media (prefers-reduced-motion: reduce) {
   .resume { animation: none; }
 }
+
+.endLink {
+  color: var(--ink);
+  text-underline-offset: 3px;
+  padding: 12px 0;
+  margin: -12px 0;
+}

@@ -47,6 +47,7 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
       book={{ slug: book.slug, coverUrl: book.cover_url, author: book.author.display_name }}
       next={next && !next.draft ? { id: next.id, number: next.number, title: next.title } : null}
       userId={me?.id ?? null}
+      author={book.own ? null : { name: book.author.display_name, href: `/@${book.author.handle}` }}
       saved={saved ? { chapterId: saved.chapterId, paragraph: saved.paragraph } : null}
       bookTitle={book.title}
       bookHref={base}

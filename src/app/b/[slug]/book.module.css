@@ -124,3 +124,18 @@
   vertical-align: 2px;
   color: var(--ink-soft);
 }
+
+.byLink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 4px;
+  /* a taller tap target without moving the line */
+  padding: 10px 0;
+  margin: -10px 0;
+}
+
+.byLink:hover { text-decoration-color: currentColor; }
+
+/* Follow sits with Share: same height as the other buttons here */
+.actions .followBtn { min-height: 48px; font-size: 16px; }
