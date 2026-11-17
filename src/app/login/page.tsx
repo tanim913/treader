@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { GoogleButton } from "@/components/auth/GoogleButton";
+import { AccountBenefits } from "@/components/auth/AccountBenefits";
 import { safeNext } from "@/lib/auth";
 import s from "@/components/auth/auth.module.css";
 
@@ -20,11 +21,13 @@ export default function LoginPage({ searchParams }: PageProps<"/login">) {
       <SiteHeader />
       <main className={s.main}>
         <h1 className={s.h1}>Sign in</h1>
-        <p className={s.lede}>Keep your bookmarks and notes, pick up where you stopped on any device, and follow writers.</p>
+        <p className={s.lede}>One Google account, no password to remember. Free.</p>
         <Suspense fallback={<GoogleButton next="/" />}>
           <LoginBody searchParams={searchParams} />
         </Suspense>
         <p className={s.fine}>You can read every book without an account.</p>
+        <h2 className={s.h2}>With an account you can</h2>
+        <AccountBenefits />
       </main>
       <SiteFooter />
     </>

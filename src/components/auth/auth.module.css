@@ -92,3 +92,10 @@
   font-weight: 500;
   cursor: pointer;
 }
+
+.h2 {
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 20px;
+  margin: var(--s7) 0 var(--s3);
+}

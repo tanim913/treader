@@ -10,6 +10,7 @@ import { getMyPlaces } from "@/lib/places";
 import { newFromFollowed } from "@/lib/profiles";
 import { audioNotices } from "@/lib/requests";
 import { AudioNotices } from "@/components/social/AudioNotices";
+import { AccountBenefits } from "@/components/auth/AccountBenefits";
 import { profileHref } from "@/lib/paths";
 import { credit } from "@/lib/byline";
 import { clothOf } from "@/lib/cloth";
@@ -42,6 +43,9 @@ export default function Home() {
             <Recent />
           </Suspense>
         </section>
+        <Suspense>
+          <ForGuests />
+        </Suspense>
       </main>
       <SiteFooter />
     </>
@@ -130,4 +134,20 @@ async function NowWithAudio() {
   if (!me) return null;
   const items = await audioNotices(me.id);
   return items.length ? <AudioNotices items={items} /> : null;
+}
+
+/** For visitors who aren't signed in: what a free account adds. Reading never needs one. */
+async function ForGuests() {
+  if (await getMe()) return null;
+  return (
+    <section className={`${s.section} ${s.guests}`} aria-labelledby="with-account">
+      <h2 id="with-account">With a free account</h2>
+      <p className={s.guestsLede}>Every book here can be read without signing in. An account adds these:</p>
+      <AccountBenefits columns />
+      <div className={s.guestsCta}>
+        <Link href="/login" className={s.signIn}>Sign in with Google</Link>
+        <span>No password to remember. Free.</span>
+      </div>
+    </section>
+  );
 }

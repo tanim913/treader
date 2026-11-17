@@ -1,0 +1,32 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-ui);
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: var(--s3);
+  align-items: start;
+  padding: var(--s3) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.icon { color: var(--ink-soft); padding-top: 1px; }
+.text { display: grid; gap: 2px; min-width: 0; }
+.title { font-family: var(--font-read); font-size: 17px; line-height: 1.35; color: var(--ink); }
+.detail { font-size: 14px; line-height: 1.45; color: var(--ink-soft); }
+
+/* wider screens: two columns, each with its own rules */
+@media (min-width: 768px) {
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--s6);
+    border-top: 0;
+  }
+  .columns .item:nth-child(-n + 2) { border-top: 1px solid var(--rule); }
+}
