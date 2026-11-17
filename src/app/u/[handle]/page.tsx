@@ -13,6 +13,7 @@ import { BookmarkList } from "@/components/bookmarks/BookmarkList";
 import { getMe } from "@/lib/auth";
 import { getMyPlaces } from "@/lib/places";
 import { profileHref } from "@/lib/paths";
+import { credit } from "@/lib/byline";
 import { booksBy, followCounts, getProfile, isFollowing, publicReading } from "@/lib/profiles";
 import { supabaseServer } from "@/lib/supabase/server";
 import { fromRow, NOTE_SELECT, type Bookmark, type NoteRow } from "@/lib/bookmarks/shape";
@@ -94,8 +95,12 @@ async function ProfileView({ params }: { params: PageProps<"/u/[handle]">["param
         <h2 id="books">Books</h2>
         {books.length ? (
           <Shelf books={books.map((b) => ({
-            href: `/b/${b.slug}`, title: b.title, author: p.displayName, cloth: b.cloth,
+            href: `/b/${b.slug}`, title: b.title, cloth: b.cloth,
             coverUrl: b.coverUrl, chapters: b.chapters, completed: b.completed,
+            // on their own profile: shared books still say whose writing they are
+            ...(b.originalAuthor
+              ? { author: b.originalAuthor, sharedBy: { name: p.displayName } }
+              : { author: p.displayName }),
           }))} />
         ) : (
           <p className={s.empty}>
@@ -109,7 +114,8 @@ async function ProfileView({ params }: { params: PageProps<"/u/[handle]">["param
         <section className={s.section} aria-labelledby="reading">
           <h2 id="reading">Currently reading</h2>
           <Shelf books={reading.map((r) => ({
-            href: `/b/${r.slug}`, title: r.title, author: r.author, authorHref: profileHref(r.authorHandle),
+            href: `/b/${r.slug}`, title: r.title,
+            ...credit({ display_name: r.author, handle: r.authorHandle }, r.originalAuthor),
             cloth: r.cloth, coverUrl: r.coverUrl, chapters: 0, completed: r.completed, note: `On chapter ${r.chapterNumber}`,
           }))} />
         </section>
@@ -139,7 +145,8 @@ async function OwnReading({ showReading }: { showReading: boolean }) {
       {places.length ? (
         <Shelf books={places.map((x) => ({
           href: `/b/${x.slug}/${x.chapterNumber}${x.paragraph > 0 ? `#p-${x.paragraph}` : ""}`,
-          title: x.title, author: x.author, authorHref: x.authorHandle ? profileHref(x.authorHandle) : undefined,
+          title: x.title,
+          ...credit({ display_name: x.uploader, handle: x.authorHandle }, x.originalAuthor),
           cloth: x.cloth, coverUrl: x.coverUrl, chapters: x.chapters, completed: x.completed,
           note: `Chapter ${x.chapterNumber} of ${x.chapters}`,
         }))} />

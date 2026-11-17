@@ -15,6 +15,8 @@ export type BookCard = {
   note?: string;
   /** the writer's profile; shows a "by Name" link under the title */
   authorHref?: string;
+  /** a book by someone else (author), shared by this person; href is their profile */
+  sharedBy?: { name: string; href?: string };
 };
 
 /** The cloth board (or uploaded cover) on its own. */
@@ -43,9 +45,18 @@ export function BookBoard({ book }: { book: BookCard }) {
         <span className={s.name}>{book.title}</span>
       </Link>
       <div className={s.meta}>
-        {book.authorHref && book.author && (
+        {book.sharedBy ? (
+          <>
+            <span className={s.byPlain}>by {book.author}</span>
+            {book.sharedBy.href ? (
+              <Link href={book.sharedBy.href} className={s.by}>Shared by {book.sharedBy.name}</Link>
+            ) : (
+              <span className={s.byPlain}>Shared by {book.sharedBy.name}</span>
+            )}
+          </>
+        ) : book.authorHref && book.author ? (
           <Link href={book.authorHref} className={s.by}>by {book.author}</Link>
-        )}
+        ) : null}
         {book.note ? (
           <span>{book.note}</span>
         ) : (

@@ -13,7 +13,7 @@ export async function getBook(slug: string) {
   const sb = await supabaseServer();
   const { data: book } = await sb
     .from("books")
-    .select("id, slug, title, blurb, cloth, cover_url, status, completed, author_id, author:profiles!books_author_id_fkey(display_name, handle)")
+    .select("id, slug, title, blurb, cloth, cover_url, status, completed, author_id, original_author, author:profiles!books_author_id_fkey(display_name, handle)")
     .eq("slug", slug)
     .maybeSingle();
   if (!book) return null;
@@ -28,7 +28,9 @@ export async function getBook(slug: string) {
     .filter((c) => own || isLive(c))
     .map((c) => ({ id: c.id, number: c.number, title: c.title, word_count: c.word_count, draft: !isLive(c) }));
   const author = (book.author as unknown as { display_name: string; handle: string } | null) ?? { display_name: "", handle: "" };
-  return { ...book, author, chapters, own };
+  /** the name readers see as the writer: the original author of a shared book */
+  const writer = book.original_author ?? author.display_name;
+  return { ...book, author, writer, chapters, own };
 }
 
 /** When the next scheduled chapter appears, if the writer has scheduled one. */

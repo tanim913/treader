@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: PageProps<"/b/[slug]/[n]">): 
   const book = await getBook(slug);
   const ch = book?.chapters.find((c) => c.number === Number(n));
   if (!book || !ch) return { title: "Chapter not found" };
-  return { title: `${ch.title} · ${book.title}`, description: `Chapter ${ch.number} of ${book.title}, by ${book.author.display_name}` };
+  return { title: `${ch.title} · ${book.title}`, description: `Chapter ${ch.number} of ${book.title}, by ${book.writer}` };
 }
 
 export default function ChapterPage({ params }: PageProps<"/b/[slug]/[n]">) {
@@ -44,7 +44,7 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
       key={ch.id}
       chapterId={ch.id}
       bookId={book.id}
-      book={{ slug: book.slug, coverUrl: book.cover_url, author: book.author.display_name }}
+      book={{ slug: book.slug, coverUrl: book.cover_url, author: book.writer }}
       next={next && !next.draft ? { id: next.id, number: next.number, title: next.title } : null}
       userId={me?.id ?? null}
       author={book.own ? null : { name: book.author.display_name, href: `/@${book.author.handle}` }}

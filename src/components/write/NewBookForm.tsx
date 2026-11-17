@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createBook, type Result } from "@/app/write/actions";
 import { ClothPicker } from "./ClothPicker";
+import { Authorship } from "./Authorship";
 import s from "./write.module.css";
 
 export function NewBookForm() {
@@ -18,6 +19,7 @@ export function NewBookForm() {
         <textarea id="blurb" name="blurb" className={s.textarea} maxLength={2000}
           placeholder="A few lines to tell readers what the book is about." />
       </div>
+      <Authorship />
       <div className={s.field}>
         <span className={s.legend}>Cloth</span>
         <span className={s.hint}>The colour of the book&rsquo;s cover on the shelf. You can upload a cover image later.</span>

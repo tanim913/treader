@@ -18,6 +18,19 @@ async function me() {
 
 const clean = (v: FormDataEntryValue | null, max: number) => String(v ?? "").trim().slice(0, max);
 
+type Authorship = { original_author: string | null; rights_confirmed_at: string | null };
+
+/** The writer's own book, or someone else's shared with permission (or in the public domain). */
+function authorship(whose: unknown, author: unknown, rights: unknown): { error: string } | { fields: Authorship } {
+  if (whose !== "other") return { fields: { original_author: null, rights_confirmed_at: null } };
+  const name = String(author ?? "").trim().replace(/\s+/g, " ").slice(0, 120);
+  if (!name) return { error: "Add the name of the book's author." };
+  if (rights !== true && rights !== "on") {
+    return { error: "Please confirm you have the author's permission, or that the book is in the public domain." };
+  }
+  return { fields: { original_author: name, rights_confirmed_at: new Date().toISOString() } };
+}
+
 export async function createBook(_: Result, form: FormData): Promise<Result> {
   const { sb, id } = await me();
   const title = clean(form.get("title"), 160);
@@ -25,11 +38,13 @@ export async function createBook(_: Result, form: FormData): Promise<Result> {
   const cloth = String(form.get("cloth") ?? "oxblood");
   if (!title) return { error: "Give the book a title." };
   if (!(cloth in CLOTHS)) return { error: "Choose a cloth colour." };
+  const who = authorship(form.get("whose"), form.get("original_author"), form.get("rights"));
+  if ("error" in who) return who;
 
   const base = slugify(title);
   for (let i = 0; i < 20; i++) {
     const slug = i === 0 ? base : `${base}-${i + 1}`;
-    const { data, error } = await sb.from("books").insert({ author_id: id, slug, title, blurb, cloth }).select("id").single();
+    const { data, error } = await sb.from("books").insert({ author_id: id, slug, title, blurb, cloth, ...who.fields }).select("id").single();
     if (!error) redirect(`/write/${data.id}`);
     if (error.code !== "23505") return { error: "Couldn't create the book. Please try again." };
   }
@@ -43,7 +58,9 @@ export async function updateBook(bookId: string, _: Result, form: FormData): Pro
   const cloth = String(form.get("cloth") ?? "oxblood");
   if (!title) return { error: "The book needs a title." };
   if (!(cloth in CLOTHS)) return { error: "Choose a cloth colour." };
-  const { error } = await sb.from("books").update({ title, blurb, cloth }).eq("id", bookId);
+  const who = authorship(form.get("whose"), form.get("original_author"), form.get("rights"));
+  if ("error" in who) return who;
+  const { error } = await sb.from("books").update({ title, blurb, cloth, ...who.fields }).eq("id", bookId);
   if (error) return { error: "Couldn't save. Please try again." };
   revalidatePath(`/write/${bookId}`);
   return { ok: true };
@@ -120,9 +137,13 @@ export async function deleteChapter(bookId: string, chapterId: string): Promise<
 
 // ---- EPUB import: the book first, then one call per chapter (keeps each request small)
 
-export async function createImportedBook(input: { title: string; blurb: string; cloth: string; rights: boolean }): Promise<Result & { id?: string; slug?: string }> {
+export async function createImportedBook(input: {
+  title: string; blurb: string; cloth: string; rights: boolean; whose: "own" | "other"; originalAuthor: string;
+}): Promise<Result & { id?: string; slug?: string }> {
   const { sb, id } = await me();
   if (!input.rights) return { error: "Please confirm you have the right to publish this book." };
+  const who = authorship(input.whose, input.originalAuthor, input.rights);
+  if ("error" in who) return who;
   const title = input.title.trim().slice(0, 160);
   const blurb = input.blurb.trim().slice(0, 2000);
   if (!title) return { error: "Give the book a title." };
@@ -130,7 +151,7 @@ export async function createImportedBook(input: { title: string; blurb: string; 
   const base = slugify(title);
   for (let i = 0; i < 20; i++) {
     const slug = i === 0 ? base : `${base}-${i + 1}`;
-    const { data, error } = await sb.from("books").insert({ author_id: id, slug, title, blurb, cloth }).select("id, slug").single();
+    const { data, error } = await sb.from("books").insert({ author_id: id, slug, title, blurb, cloth, ...who.fields }).select("id, slug").single();
     if (!error) return { ok: true, id: data.id, slug: data.slug };
     if (error.code !== "23505") return { error: "Couldn't create the book. Please try again." };
   }

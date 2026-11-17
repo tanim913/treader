@@ -139,3 +139,6 @@
 
 /* Follow sits with Share: same height as the other buttons here */
 .actions .followBtn { min-height: 48px; font-size: 16px; }
+
+.shared { margin: var(--s1) 0 0; font-size: 15px; color: var(--ink-soft); }
+.shared .byLink { color: var(--ink); }

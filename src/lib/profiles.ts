@@ -47,6 +47,7 @@ export async function isFollowing(followerId: string, authorId: string): Promise
 
 export type ShelfBook = {
   slug: string; title: string; cloth: string; coverUrl: string | null; completed: boolean; chapters: number;
+  originalAuthor: string | null;
 };
 
 /** A person's published books, newest activity first. */
@@ -54,13 +55,14 @@ export async function booksBy(id: string): Promise<ShelfBook[]> {
   const sb = await supabaseServer();
   const { data } = await sb
     .from("books")
-    .select("slug, title, cloth, cover_url, completed, chapters(count)")
+    .select("slug, title, cloth, cover_url, completed, original_author, chapters(count)")
     .eq("author_id", id)
     .eq("status", "published")
     .eq("hidden_by_admin", false)
     .order("updated_at", { ascending: false });
   return (data ?? []).map((b) => ({
     slug: b.slug, title: b.title, cloth: b.cloth, coverUrl: b.cover_url, completed: b.completed,
+    originalAuthor: b.original_author,
     chapters: (b.chapters as { count: number }[] | null)?.[0]?.count ?? 0,
   }));
 }
@@ -82,16 +84,17 @@ export async function followList(id: string, tab: "followers" | "following"): Pr
 
 export type ReadingNow = {
   slug: string; title: string; cloth: string; coverUrl: string | null; author: string; authorHandle: string;
-  completed: boolean; chapterNumber: number;
+  originalAuthor: string | null; completed: boolean; chapterNumber: number;
 };
 
 /** What this person is reading, if they chose to show it on their profile. */
 export async function publicReading(id: string): Promise<ReadingNow[]> {
   const sb = await supabaseServer();
   const { data } = await sb.rpc("public_reading", { p: id });
-  type Row = { slug: string; title: string; cloth: string; cover_url: string | null; author: string; author_handle: string; completed: boolean; chapter_number: number };
+  type Row = { slug: string; title: string; cloth: string; cover_url: string | null; author: string; author_handle: string; original_author: string | null; completed: boolean; chapter_number: number };
   return ((data ?? []) as Row[]).map((r) => ({
     slug: r.slug, title: r.title, cloth: r.cloth, coverUrl: r.cover_url, author: r.author, authorHandle: r.author_handle,
+    originalAuthor: r.original_author,
     completed: r.completed, chapterNumber: r.chapter_number,
   }));
 }

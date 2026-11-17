@@ -17,7 +17,10 @@ export async function getPlace(bookId: string): Promise<SavedPlace | null> {
 }
 
 export type ShelfPlace = SavedPlace & {
-  slug: string; title: string; cloth: string; coverUrl: string | null; author: string; authorHandle: string;
+  slug: string; title: string; cloth: string; coverUrl: string | null;
+  /** who wrote it: the original author of a shared book, otherwise the uploader */
+  author: string;
+  uploader: string; authorHandle: string; originalAuthor: string | null;
   completed: boolean; chapters: number;
 };
 
@@ -29,13 +32,13 @@ export async function getMyPlaces(limit = 8): Promise<ShelfPlace[]> {
   const { data } = await sb
     .from("reading_progress")
     .select("chapter_id, paragraph, updated_at, chapter:chapters(number, title), " +
-      "book:books(slug, title, cloth, cover_url, completed, author:profiles!books_author_id_fkey(display_name, handle), chapters(count))")
+      "book:books(slug, title, cloth, cover_url, completed, original_author, author:profiles!books_author_id_fkey(display_name, handle), chapters(count))")
     .order("updated_at", { ascending: false })
     .limit(limit);
   type Row = {
     chapter_id: string; paragraph: number;
     chapter: { number: number; title: string } | null;
-    book: { slug: string; title: string; cloth: string; cover_url: string | null; completed: boolean;
+    book: { slug: string; title: string; cloth: string; cover_url: string | null; completed: boolean; original_author: string | null;
       author: { display_name: string; handle: string } | null; chapters: { count: number }[] } | null;
   };
   return ((data ?? []) as unknown as Row[])
@@ -49,8 +52,10 @@ export async function getMyPlaces(limit = 8): Promise<ShelfPlace[]> {
       title: r.book!.title,
       cloth: r.book!.cloth,
       coverUrl: r.book!.cover_url,
-      author: r.book!.author?.display_name ?? "",
+      author: r.book!.original_author ?? r.book!.author?.display_name ?? "",
+      uploader: r.book!.author?.display_name ?? "",
       authorHandle: r.book!.author?.handle ?? "",
+      originalAuthor: r.book!.original_author,
       completed: r.book!.completed,
       chapters: r.book!.chapters?.[0]?.count ?? 0,
     }));

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FileUp } from "lucide-react";
 import { readEpub, type EpubBook } from "@/lib/epub";
 import { addImportedChapter, createImportedBook, setBookFlags } from "@/app/write/actions";
+import { Authorship, type AuthorshipValue } from "./Authorship";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { CLOTHS } from "@/lib/cloth";
 import s from "./write.module.css";
@@ -22,6 +23,7 @@ export function EpubImport() {
   const [cloth, setCloth] = useState("oxblood");
   const [picked, setPicked] = useState<boolean[]>([]);
   const [rights, setRights] = useState(false);
+  const [who, setWho] = useState<AuthorshipValue>({ whose: "own", author: "", rights: false });
   const [useCover, setUseCover] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,10 @@ export function EpubImport() {
     if (!book) return;
     setError(null);
     setBusy("Creating the book…");
-    const created = await createImportedBook({ title, blurb, cloth, rights });
+    const shared = who.whose === "other";
+    const created = await createImportedBook({
+      title, blurb, cloth, rights: shared ? who.rights : rights, whose: who.whose, originalAuthor: who.author,
+    });
     if (created.error || !created.id) { setBusy(null); return setError(created.error ?? "Couldn't create the book."); }
     const bookId = created.id;
     for (let i = 0; i < chosen.length; i++) {
@@ -97,7 +102,7 @@ export function EpubImport() {
       <div className={s.field}>
         <label htmlFor="ititle">Title</label>
         <input id="ititle" className={s.input} value={title} maxLength={160} onChange={(ev) => setTitle(ev.target.value)} />
-        {book.author && <span className={s.hint}>The EPUB names the author as {book.author}. Books here appear under your name.</span>}
+        {book.author && <span className={s.hint}>The EPUB names the author as {book.author}.</span>}
       </div>
       <div className={s.field}>
         <label htmlFor="iblurb">Blurb</label>
@@ -151,17 +156,21 @@ export function EpubImport() {
         </ol>
       </div>
 
-      <label className={e.check}>
-        <input type="checkbox" checked={rights} onChange={(ev) => setRights(ev.target.checked)} />
-        I wrote this book, or I have the right to publish it here.
-      </label>
+      <Authorship key={book.title} initial={{ whose: "own", author: book.author ?? "", rights: false }} onChange={setWho} />
+
+      {who.whose === "own" && (
+        <label className={e.check}>
+          <input type="checkbox" checked={rights} onChange={(ev) => setRights(ev.target.checked)} />
+          I wrote this book, or I have the right to publish it here.
+        </label>
+      )}
 
       {error && <p className={s.error} role="alert">{error}</p>}
       <div className={s.actions}>
-        <button type="button" className={`${s.btn} ${s.primary}`} disabled={!!busy || !rights || !chosen.length || !title.trim()} onClick={run}>
+        <button type="button" className={`${s.btn} ${s.primary}`} disabled={!!busy || !(who.whose === "other" ? who.rights && who.author.trim() : rights) || !chosen.length || !title.trim()} onClick={run}>
           {busy ?? `Import ${chosen.length} ${chosen.length === 1 ? "chapter" : "chapters"} as drafts`}
         </button>
-        <button type="button" className={`${s.btn} ${s.quiet}`} disabled={!!busy} onClick={() => { setBook(null); setRights(false); }}>
+        <button type="button" className={`${s.btn} ${s.quiet}`} disabled={!!busy} onClick={() => { setBook(null); setRights(false); setWho({ whose: "own", author: "", rights: false }); }}>
           Choose another file
         </button>
       </div>

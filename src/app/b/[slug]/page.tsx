@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/b/[slug]">): Prom
   const { slug } = await params;
   const book = await getBook(slug);
   if (!book) return { title: "Book not found" };
-  return { title: book.title, description: book.blurb.slice(0, 200) || `${book.title}, by ${book.author.display_name}` };
+  return { title: book.title, description: book.blurb.slice(0, 200) || `${book.title}, by ${book.writer}` };
 }
 
 export default function BookPage({ params }: PageProps<"/b/[slug]">) {
@@ -59,11 +59,18 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
       )}
       <section className={s.hero}>
         <div className={s.coverWrap}>
-          <BookCover title={book.title} author={book.author.display_name} cloth={book.cloth} coverUrl={book.cover_url} />
+          <BookCover title={book.title} author={book.writer} cloth={book.cloth} coverUrl={book.cover_url} />
         </div>
         <div className={s.info}>
           <h1 className={s.title}>{book.title}</h1>
-          <p className={s.by}>by <Link href={profileHref(book.author.handle)} className={s.byLink}>{book.author.display_name}</Link></p>
+          {book.original_author ? (
+            <>
+              <p className={s.by}>by {book.original_author}</p>
+              <p className={s.shared}>Shared by <Link href={profileHref(book.author.handle)} className={s.byLink}>{book.author.display_name}</Link></p>
+            </>
+          ) : (
+            <p className={s.by}>by <Link href={profileHref(book.author.handle)} className={s.byLink}>{book.author.display_name}</Link></p>
+          )}
           <p className={s.meta}>
             {count} {count === 1 ? "chapter" : "chapters"} · {book.completed ? "Complete" : "Ongoing"}
           </p>

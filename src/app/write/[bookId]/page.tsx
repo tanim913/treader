@@ -35,7 +35,7 @@ async function Book({ params }: { params: PageProps<"/write/[bookId]">["params"]
   const me = await requireMe(`/write/${bookId}`);
   const sb = await supabaseServer();
   const { data: book } = await sb.from("books")
-    .select("id, author_id, title, slug, blurb, cloth, cover_url, status, completed")
+    .select("id, author_id, title, slug, blurb, cloth, cover_url, status, completed, original_author")
     .eq("id", bookId).maybeSingle();
   if (!book || book.author_id !== me.id) notFound();
   const { data: chapters } = await sb.from("chapters")

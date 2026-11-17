@@ -4,9 +4,10 @@ import { useActionState, useRef, useState, useTransition } from "react";
 import { deleteBook, setBookFlags, updateBook, type Result } from "@/app/write/actions";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { ClothPicker } from "./ClothPicker";
+import { Authorship } from "./Authorship";
 import s from "./write.module.css";
 
-type Book = { id: string; title: string; blurb: string; cloth: string; cover_url: string | null };
+type Book = { id: string; title: string; blurb: string; cloth: string; cover_url: string | null; original_author: string | null };
 
 const MAX_COVER = 2 * 1024 * 1024;
 
@@ -46,6 +47,9 @@ export function BookSettings({ book, userId }: { book: Book; userId: string }) {
           <label htmlFor="blurb">Blurb</label>
           <textarea id="blurb" name="blurb" className={s.textarea} defaultValue={book.blurb} maxLength={2000} />
         </div>
+        <Authorship initial={book.original_author
+          ? { whose: "other", author: book.original_author, rights: true }
+          : { whose: "own" }} />
         <div className={s.field}>
           <span className={s.legend}>Cloth</span>
           <span className={s.hint}>Shown when the book has no cover image.</span>

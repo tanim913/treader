@@ -9,6 +9,7 @@ import { getMe } from "@/lib/auth";
 import { getMyPlaces } from "@/lib/places";
 import { newFromFollowed } from "@/lib/profiles";
 import { profileHref } from "@/lib/paths";
+import { credit } from "@/lib/byline";
 import { clothOf } from "@/lib/cloth";
 import { fmtDay } from "@/lib/books";
 import p from "@/components/profile/profile.module.css";
@@ -46,7 +47,7 @@ async function Recent() {
   const sb = await supabaseServer();
   const { data } = await sb
     .from("books")
-    .select("slug, title, cloth, cover_url, completed, status, updated_at, author:profiles!books_author_id_fkey(display_name, handle), chapters(count)")
+    .select("slug, title, cloth, cover_url, completed, status, updated_at, original_author, author:profiles!books_author_id_fkey(display_name, handle), chapters(count)")
     .eq("status", "published")
     .eq("hidden_by_admin", false)
     .order("updated_at", { ascending: false })
@@ -56,8 +57,7 @@ async function Recent() {
     return {
     href: `/b/${b.slug}`,
     title: b.title,
-    author: author?.display_name ?? "",
-    authorHref: author ? profileHref(author.handle) : undefined,
+    ...credit(author, b.original_author),
     cloth: b.cloth,
     coverUrl: b.cover_url,
     chapters: (b.chapters as { count: number }[] | null)?.[0]?.count ?? 0,
@@ -81,8 +81,7 @@ async function ContinueReading() {
       <Shelf books={places.map((x) => ({
         href: `/b/${x.slug}/${x.chapterNumber}${x.paragraph > 0 ? `#p-${x.paragraph}` : ""}`,
         title: x.title,
-        author: x.author,
-        authorHref: x.authorHandle ? profileHref(x.authorHandle) : undefined,
+        ...credit({ display_name: x.uploader, handle: x.authorHandle }, x.originalAuthor),
         cloth: x.cloth,
         coverUrl: x.coverUrl,
         chapters: x.chapters,

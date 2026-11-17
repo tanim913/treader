@@ -129,3 +129,5 @@
   .title { font-size: 17px; }
   .author { font-size: 12px; }
 }
+
+.byPlain { width: 100%; font-size: 14px; color: var(--ink); overflow-wrap: anywhere; }
