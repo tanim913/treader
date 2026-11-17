@@ -15,6 +15,7 @@ const TABS = [
   { id: "open", label: "Open reports" },
   { id: "resolved", label: "Resolved" },
   { id: "dismissed", label: "Dismissed" },
+  { id: "audio", label: "Audio requests" },
   { id: "hidden", label: "Hidden" },
   { id: "banned", label: "Banned" },
 ] as const;
@@ -56,7 +57,7 @@ async function Admin({ searchParams }: { searchParams: PageProps<"/admin">["sear
           </Link>
         ))}
       </nav>
-      {tab === "hidden" ? <Hidden /> : tab === "banned" ? <Banned meId={me.id} /> : <Reports status={tab} meId={me.id} />}
+      {tab === "audio" ? <AudioRequests /> : tab === "hidden" ? <Hidden /> : tab === "banned" ? <Banned meId={me.id} /> : <Reports status={tab} meId={me.id} />}
     </>
   );
 }
@@ -211,5 +212,54 @@ async function Banned({ meId }: { meId: string }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+/** What readers have asked to hear, most-wanted book first. */
+async function AudioRequests() {
+  const sb = await supabaseServer();
+  const [{ data }, { data: voiced }] = await Promise.all([
+    sb.from("audio_requests").select("book_id, chapter_id, book:books(id, slug, title, audio_enabled), chapter:chapters(number, title)").limit(5000),
+    sb.from("chapter_audio").select("chapter_id"),
+  ]);
+  type R = {
+    book_id: string; chapter_id: string | null;
+    book: { id: string; slug: string; title: string; audio_enabled: boolean } | null;
+    chapter: { number: number; title: string } | null;
+  };
+  const hasAudio = new Set((voiced ?? []).map((v) => v.chapter_id as string));
+  const books = new Map<string, { book: NonNullable<R["book"]>; whole: number; chapters: Map<string, { number: number; title: string; count: number }> }>();
+  for (const r of (data ?? []) as unknown as R[]) {
+    if (!r.book) continue;
+    const g = books.get(r.book_id) ?? { book: r.book, whole: 0, chapters: new Map() };
+    if (!r.chapter_id) g.whole++;
+    else if (r.chapter) {
+      const c = g.chapters.get(r.chapter_id) ?? { number: r.chapter.number, title: r.chapter.title, count: 0 };
+      c.count++;
+      g.chapters.set(r.chapter_id, c);
+    }
+    books.set(r.book_id, g);
+  }
+  const list = [...books.values()].map((g) => ({ ...g, total: g.whole + [...g.chapters.values()].reduce((a, c) => a + c.count, 0) }))
+    .sort((a, b) => b.total - a.total);
+  if (!list.length) return <p className={s.muted}>No audio requests yet. Readers can ask from a book page or the end of a chapter.</p>;
+  return (
+    <ol className={s.list}>
+      {list.map((g) => (
+        <li key={g.book.id} className={s.item}>
+          <p className={s.kind}>{g.total} {g.total === 1 ? "request" : "requests"}{g.book.audio_enabled ? "" : <span className={s.flag}>audio off</span>}</p>
+          <p className={s.what}><Link href={`/b/${g.book.slug}`}>{g.book.title}</Link></p>
+          {g.whole > 0 && <p className={s.meta}>{g.whole} {g.whole === 1 ? "reader wants" : "readers want"} the whole book</p>}
+          {[...g.chapters.entries()].sort((a, b) => a[1].number - b[1].number).map(([id, c]) => (
+            <p key={id} className={s.meta}>
+              Chapter {c.number}, “{c.title}”: {c.count} {c.count === 1 ? "request" : "requests"} · {hasAudio.has(id) ? "has audio" : "no audio yet"}
+            </p>
+          ))}
+          <div className={s.actions}>
+            <Link href={`/admin/audio/${g.book.id}`} className={`${s.btn} ${s.primary}`}>Narrate this book</Link>
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }

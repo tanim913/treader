@@ -66,3 +66,18 @@
 .note { color: var(--ink-soft); }
 
 @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+.voice {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 13px var(--font-ui);
+  cursor: pointer;
+}
+
+.voice:hover { background: var(--paper-deep); }
+
+@media (max-width: 380px) { .time { font-size: 13px; padding: 0 4px; } }

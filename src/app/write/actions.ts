@@ -5,8 +5,7 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { CLOTHS } from "@/lib/cloth";
 import { slugify, wordCount, type TNode } from "@/lib/doc";
-import { audioPath, removeBookAudio } from "@/lib/audio";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { removeBookAudio, removeChapterAudio } from "@/lib/audio";
 
 export type Result = { error?: string; ok?: boolean };
 
@@ -136,7 +135,7 @@ export async function deleteChapter(bookId: string, chapterId: string): Promise<
   const { sb } = await me();
   const { data: gone, error } = await sb.from("chapters").delete().eq("id", chapterId).eq("book_id", bookId).select("id");
   if (error) return { error: "Couldn't delete the chapter." };
-  if (gone?.length) await supabaseAdmin().storage.from("audio").remove([audioPath(bookId, chapterId)]).catch(() => {});
+  if (gone?.length) await removeChapterAudio(bookId, chapterId).catch(() => {});
   redirect(`/write/${bookId}`);
 }
 

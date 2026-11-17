@@ -8,6 +8,7 @@ import { ShareButton } from "@/components/ShareButton";
 import { LikeButton } from "@/components/social/LikeButton";
 import { ReportButton } from "@/components/social/ReportButton";
 import { Comments } from "@/components/social/Comments";
+import { RequestAudio } from "@/components/social/RequestAudio";
 import { clothOf } from "@/lib/cloth";
 import type { Block } from "@/lib/text";
 import { useBookmarkState } from "@/lib/bookmarks/store";
@@ -30,10 +31,10 @@ export type ReaderProps = {
   userId: string | null;
   /** the writer, for "Follow …" at the end of an unfinished book (null on the writer's own book) */
   author: { name: string; href: string } | null;
-  /** this chapter's narration, when its book has audio switched on */
-  audio: { duration: number } | null;
+  /** this chapter's narration voices, when its book has audio switched on */
+  audio: { voice: string; duration: number }[] | null;
   /** likes and comments, on published chapters only */
-  social: { likes: number; liked: boolean; chapterAuthorId: string } | null;
+  social: { likes: number; liked: boolean; chapterAuthorId: string; audioRequested: boolean } | null;
   /** scroll to this paragraph once the text is drawn (a Continue link) */
   jumpTo?: number;
   /** offer to go back to this paragraph (where the reader stopped in this chapter) */
@@ -255,6 +256,9 @@ export function Reader(p: ReaderProps) {
               <ReportButton target="chapter" id={p.chapterId} userId={p.userId} what="this chapter" />
             )}
           </div>
+          {!p.audio && p.userId !== p.social.chapterAuthorId && (
+            <div><RequestAudio bookId={p.bookId} chapterId={p.chapterId} userId={p.userId} initial={p.social.audioRequested} /></div>
+          )}
           <Comments chapterId={p.chapterId} userId={p.userId} chapterAuthorId={p.social.chapterAuthorId} />
         </aside>
       )}
@@ -292,7 +296,7 @@ export function Reader(p: ReaderProps) {
       )}
 
       {p.audio && listening && (
-        <AudioBar chapterId={p.chapterId} duration={p.audio.duration} chapterTitle={p.chapterTitle}
+        <AudioBar chapterId={p.chapterId} voices={p.audio} chapterTitle={p.chapterTitle}
           bookTitle={p.bookTitle} author={p.book.author} coverUrl={p.book.coverUrl} lifted={shown}
           onClose={() => setListening(false)} />
       )}

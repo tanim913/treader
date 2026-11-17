@@ -6,9 +6,13 @@ import JSZip from "jszip";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import { audioUploadUrl, narrationText, removeAudio, saveAudio, setAudioEnabled } from "@/app/write/audio-actions";
 import { Switch } from "./Switch";
+import { VOICES, VOICE_IDS, voiceName, type VoiceId } from "@/lib/voices";
 import s from "./write.module.css";
 
-export type AudioChapter = { id: string; number: number; title: string; status: string; bytes: number | null; duration: number | null };
+export type AudioChapter = {
+  id: string; number: number; title: string; status: string;
+  voices: { voice: string; bytes: number; duration: number }[];
+};
 
 const MB = (b: number) => `${(b / 1024 / 1024).toFixed(b < 10 * 1024 * 1024 ? 1 : 0)} MB`;
 const mins = (sec: number) => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
@@ -42,9 +46,11 @@ export function AudioPanel({ bookId, slug, enabled, chapters, totalBytes, budget
   const [msg, setMsg] = useState<{ text: string; bad?: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [switching, start] = useTransition();
+  const [voice, setVoice] = useState<VoiceId>(VOICE_IDS[0]);
 
-  const bookBytes = useMemo(() => chapters.reduce((a, c) => a + (c.bytes ?? 0), 0), [chapters]);
-  const withAudio = chapters.filter((c) => c.bytes).length;
+  const bookBytes = useMemo(() => chapters.reduce((a, c) => a + c.voices.reduce((b, v) => b + v.bytes, 0), 0), [chapters]);
+  const withAudio = chapters.filter((c) => c.voices.length).length;
+  const has = (c: AudioChapter, v: string) => c.voices.some((x) => x.voice === v);
   const share = Math.min(100, (totalBytes / budgetBytes) * 100);
   const chosen = chapters.filter((c) => picked.has(c.id));
   const toggle = (id: string) => setPicked((p) => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n; });
@@ -77,30 +83,30 @@ export function AudioPanel({ bookId, slug, enabled, chapters, totalBytes, budget
       if (f.size > MAX_FILE) { problems.push(`${f.name}: over 50 MB`); continue; }
       setMsg({ text: `Uploading chapter ${ch.number}…` });
       const duration = await durationOf(f);
-      const link = await audioUploadUrl(bookId, ch.id);
+      const link = await audioUploadUrl(bookId, ch.id, voice);
       if (!link.ok || !link.path || !link.token) { problems.push(`chapter ${ch.number}: ${link.error}`); continue; }
       const { error } = await supabaseBrowser().storage.from("audio")
         .uploadToSignedUrl(link.path, link.token, f, { contentType: "audio/mpeg", upsert: true });
       if (error) { problems.push(`chapter ${ch.number}: upload failed`); continue; }
-      const saved = await saveAudio(bookId, ch.id, { duration, voice: "Kokoro" });
+      const saved = await saveAudio(bookId, ch.id, { duration, voice });
       if (!saved.ok) { problems.push(`chapter ${ch.number}: ${saved.error}`); continue; }
       done.push(ch.number);
     }
     setBusy(false);
     setMsg({
-      text: [done.length ? `Added audio to chapter${done.length === 1 ? "" : "s"} ${done.join(", ")}.` : "", ...problems].filter(Boolean).join(" "),
+      text: [done.length ? `Added ${voiceName(voice)} to chapter${done.length === 1 ? "" : "s"} ${done.join(", ")}.` : "", ...problems].filter(Boolean).join(" "),
       bad: problems.length > 0,
     });
     router.refresh();
   };
 
   const remove = async () => {
-    const ids = chosen.filter((c) => c.bytes).map((c) => c.id);
+    const ids = chosen.filter((c) => has(c, voice)).map((c) => c.id);
     if (!ids.length) return;
     setBusy(true); setMsg(null);
-    const r = await removeAudio(bookId, ids);
+    const r = await removeAudio(bookId, ids, voice);
     setBusy(false);
-    setMsg(r.ok ? { text: `Removed audio from ${ids.length} ${ids.length === 1 ? "chapter" : "chapters"}.` } : { text: r.error ?? "Couldn't remove it.", bad: true });
+    setMsg(r.ok ? { text: `Removed ${voiceName(voice)} from ${ids.length} ${ids.length === 1 ? "chapter" : "chapters"}.` } : { text: r.error ?? "Couldn't remove it.", bad: true });
     setPicked(new Set());
     router.refresh();
   };
@@ -134,7 +140,7 @@ export function AudioPanel({ bookId, slug, enabled, chapters, totalBytes, budget
         <span className={s.legend}>Chapters</span>
         <div className={s.actions}>
           <button type="button" className={`${s.btn} ${s.quiet}`} onClick={() => setPicked(new Set(chapters.map((c) => c.id)))}>Select all</button>
-          <button type="button" className={`${s.btn} ${s.quiet}`} onClick={() => setPicked(new Set(chapters.filter((c) => !c.bytes).map((c) => c.id)))}>Select those without audio</button>
+          <button type="button" className={`${s.btn} ${s.quiet}`} onClick={() => setPicked(new Set(chapters.filter((c) => !has(c, voice)).map((c) => c.id)))}>Select those without {voiceName(voice)}</button>
           {picked.size > 0 && <button type="button" className={`${s.btn} ${s.quiet}`} onClick={() => setPicked(new Set())}>Clear</button>}
         </div>
         <ul className={s.audioList}>
@@ -144,11 +150,26 @@ export function AudioPanel({ bookId, slug, enabled, chapters, totalBytes, budget
                 <input type="checkbox" checked={picked.has(c.id)} onChange={() => toggle(c.id)} />
                 <span className={s.num}>{c.number}</span>
                 <span className={s.audioTitle}>{c.title}{c.status !== "published" && <span className={s.pill}>{c.status === "draft" ? "Draft" : "Scheduled"}</span>}</span>
-                <span className={s.audioState}>{c.bytes ? `${mins(c.duration ?? 0)} · ${MB(c.bytes)}` : "No audio"}</span>
+                <span className={s.audioState}>
+                  {c.voices.length ? c.voices.map((v) => `${voiceName(v.voice)} ${mins(v.duration)}`).join(" · ") : "No audio"}
+                </span>
               </label>
             </li>
           ))}
         </ul>
+      </div>
+
+      <div className={s.field}>
+        <span className={s.legend}>Voice for uploading and removing</span>
+        <div className={s.actions} role="group" aria-label="Voice">
+          {VOICE_IDS.map((v) => (
+            <button key={v} type="button" className={`${s.btn} ${voice === v ? s.primary : s.quiet}`} aria-pressed={voice === v}
+              onClick={() => setVoice(v)}>
+              {VOICES[v].name} · {VOICES[v].accent}
+            </button>
+          ))}
+        </div>
+        <span className={s.hint}>Run the notebook with the same VOICE (bm_george or af_heart) before uploading its files.</span>
       </div>
 
       <div className={s.actions}>
@@ -156,12 +177,12 @@ export function AudioPanel({ bookId, slug, enabled, chapters, totalBytes, budget
           Download text for narration{chosen.length ? ` (${chosen.length})` : ""}
         </button>
         <label className={`${s.btn} ${s.quiet} ${busy ? s.disabledLabel : ""}`}>
-          Upload MP3s
+          Upload {voiceName(voice)} MP3s
           <input type="file" accept="audio/mpeg,.mp3" multiple hidden disabled={busy}
             onChange={(e) => { if (e.target.files?.length) void upload(e.target.files); e.target.value = ""; }} />
         </label>
-        <button type="button" className={`${s.btn} ${s.danger}`} disabled={busy || !chosen.some((c) => c.bytes)} onClick={remove}>
-          Remove audio
+        <button type="button" className={`${s.btn} ${s.danger}`} disabled={busy || !chosen.some((c) => has(c, voice))} onClick={remove}>
+          Remove {voiceName(voice)}
         </button>
       </div>
       <span className={s.hint}>

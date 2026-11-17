@@ -152,3 +152,15 @@
 }
 
 .hasAudio { display: inline-block; margin-left: 8px; color: var(--ink-soft); vertical-align: -1px; }
+
+.requestRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s4);
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
+}
+
+.requestRow p { margin: 0; color: var(--ink-soft); font-size: 15px; }

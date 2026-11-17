@@ -17,15 +17,18 @@ Audio is **off for every book** until an admin switches it on, and you choose wh
    It takes about a minute per chapter on a GPU. The last cell gives you `treader-audio.zip` of `ch01.mp3`, `ch02.mp3` and so on.
 3. **Upload.**
    - Unzip the file.
-   - Back on the book's page, press **Upload MP3s** and choose the files. Each file goes to the chapter its name says.
+   - Back on the book's page, choose the voice you narrated with (George or Heart), then press **Upload … MP3s** and choose the files. Each file goes to the chapter its name says.
+   - A chapter can have both voices. Readers switch between them in the player.
 4. **Switch it on.** Turn on **Audio narration for this book**. Readers then get a headphones button in the reader, and a headphones mark beside those chapters in the Contents.
 
-**Voices:** change `VOICE` in cell 2.
+**Voices:** change `VOICE` in cell 2. The app offers two voices, `bm_george` (George, British) and `af_heart` (Heart, American). Others work in the notebook, but the app needs adding to before it can play them.
 
 | Voice | Accent |
 |---|---|
 | `af_heart` (the default, the clearest), `af_bella`, `am_michael`, `am_fenrir` | American |
 | `bf_emma`, `bm_george`, `bm_fable` | British |
+
+**Reader requests:** signed-in readers can ask for a chapter's or a whole book's audio. The requests are listed under **Audio requests** in `/admin`, with a link to narrate any book, and readers who asked see "Now with audio" on their home page once it's ready.
 
 ## Storage and downloads (Supabase free plan)
 

@@ -12,6 +12,7 @@ import { BookPublishing } from "@/components/write/BookPublishing";
 import { NewChapterButton } from "@/components/write/NewChapterButton";
 import { AudioPanel } from "@/components/write/AudioPanel";
 import { STORAGE_BUDGET_BYTES } from "@/lib/audio";
+import { loadAudioPanel } from "@/lib/audio-admin";
 import s from "@/components/write/write.module.css";
 
 export const metadata: Metadata = { title: "Edit book" };
@@ -37,23 +38,15 @@ async function Book({ params }: { params: PageProps<"/write/[bookId]">["params"]
   const me = await requireMe(`/write/${bookId}`);
   const sb = await supabaseServer();
   const { data: book } = await sb.from("books")
-    .select("id, author_id, title, slug, blurb, cloth, cover_url, status, completed, original_author, audio_enabled")
+    .select("id, author_id, title, slug, blurb, cloth, cover_url, status, completed, original_author")
     .eq("id", bookId).maybeSingle();
   if (!book || book.author_id !== me.id) notFound();
   const { data: chapters } = await sb.from("chapters")
     .select("id, number, title, status, publish_at, word_count")
     .eq("book_id", bookId).order("number");
 
-  // narration is for admins only (storage is limited); admins can read every chapter_audio row
-  let audio: { rows: Map<string, { bytes: number; duration_s: number }>; total: number } | null = null;
-  if (me.role === "admin") {
-    const { data: all } = await sb.from("chapter_audio").select("chapter_id, bytes, duration_s");
-    const ids = new Set((chapters ?? []).map((c) => c.id));
-    audio = {
-      rows: new Map((all ?? []).filter((r) => ids.has(r.chapter_id)).map((r) => [r.chapter_id as string, { bytes: r.bytes, duration_s: r.duration_s }])),
-      total: (all ?? []).reduce((a, r) => a + (r.bytes ?? 0), 0),
-    };
-  }
+  // narration is for admins only (storage is limited)
+  const audio = me.role === "admin" ? await loadAudioPanel(book.id) : null;
 
   const h = await headers();
   const origin = `${h.get("x-forwarded-proto") ?? "http"}://${h.get("x-forwarded-host") ?? h.get("host")}`;
@@ -108,13 +101,10 @@ async function Book({ params }: { params: PageProps<"/write/[bookId]">["params"]
           <AudioPanel
             bookId={book.id}
             slug={book.slug}
-            enabled={book.audio_enabled}
-            totalBytes={audio.total}
+            enabled={audio.book.audio_enabled}
+            totalBytes={audio.totalBytes}
             budgetBytes={STORAGE_BUDGET_BYTES}
-            chapters={(chapters ?? []).map((c) => ({
-              id: c.id, number: c.number, title: c.title, status: c.status,
-              bytes: audio.rows.get(c.id)?.bytes ?? null, duration: audio.rows.get(c.id)?.duration_s ?? null,
-            }))}
+            chapters={audio.chapters}
           />
         </section>
       )}

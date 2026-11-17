@@ -8,6 +8,8 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { getMe } from "@/lib/auth";
 import { getMyPlaces } from "@/lib/places";
 import { newFromFollowed } from "@/lib/profiles";
+import { audioNotices } from "@/lib/requests";
+import { AudioNotices } from "@/components/social/AudioNotices";
 import { profileHref } from "@/lib/paths";
 import { credit } from "@/lib/byline";
 import { clothOf } from "@/lib/cloth";
@@ -25,6 +27,9 @@ export default function Home() {
           <h1>{APP_TAGLINE}</h1>
           <p>Follow a book as it is written. Keep your own notes in its margins.</p>
         </div>
+        <Suspense>
+          <NowWithAudio />
+        </Suspense>
         <Suspense>
           <ContinueReading />
         </Suspense>
@@ -117,4 +122,12 @@ async function FromFollowed() {
       </ul>
     </section>
   );
+}
+
+/** Audio this reader asked for that is now ready. */
+async function NowWithAudio() {
+  const me = await getMe();
+  if (!me) return null;
+  const items = await audioNotices(me.id);
+  return items.length ? <AudioNotices items={items} /> : null;
 }

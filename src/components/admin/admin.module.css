@@ -113,3 +113,5 @@
 
 .confirm { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); color: var(--danger); }
 .error { color: var(--danger); font-size: 14px; }
+
+a.btn { display: inline-flex; align-items: center; text-decoration: none; }

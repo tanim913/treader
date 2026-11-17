@@ -7,6 +7,7 @@ import { getMe } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { audioPath } from "@/lib/audio";
 import { toBlocks, type TNode } from "@/lib/doc";
+import { isVoice } from "@/lib/voices";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export type AudioResult = { ok: boolean; error?: string };
@@ -56,46 +57,55 @@ export async function narrationText(bookId: string, chapterIds: string[]): Promi
 }
 
 /** A one-time link the browser uploads one chapter's MP3 to, straight into the private bucket. */
-export async function audioUploadUrl(bookId: string, chapterId: string): Promise<{ ok: boolean; error?: string; path?: string; token?: string }> {
+export async function audioUploadUrl(bookId: string, chapterId: string, voice: string): Promise<{ ok: boolean; error?: string; path?: string; token?: string }> {
   const db = await admin();
   if (!db) return { ok: false, error: "Only admins can upload audio." };
+  if (!isVoice(voice)) return { ok: false, error: "Choose a voice." };
   if (!(await chapterOf(db, bookId, chapterId))) return { ok: false, error: "That chapter isn't in this book." };
-  const path = audioPath(bookId, chapterId);
+  const path = audioPath(bookId, chapterId, voice);
   const { data, error } = await db.storage.from("audio").createSignedUploadUrl(path, { upsert: true });
   if (error || !data) return { ok: false, error: "Couldn't start the upload. Try again." };
   return { ok: true, path: data.path, token: data.token };
 }
 
-/** Records an uploaded MP3 against its chapter. */
+/** Records an uploaded MP3 against its chapter and voice. */
 export async function saveAudio(bookId: string, chapterId: string, info: { duration: number; voice: string }): Promise<AudioResult> {
   const db = await admin();
   if (!db) return { ok: false, error: "Only admins can upload audio." };
+  const voice = info?.voice;
+  if (!isVoice(voice)) return { ok: false, error: "Choose a voice." };
   if (!(await chapterOf(db, bookId, chapterId))) return { ok: false, error: "That chapter isn't in this book." };
-  const path = audioPath(bookId, chapterId);
+  const path = audioPath(bookId, chapterId, voice);
+  const name = path.slice(bookId.length + 1);
   // the size comes from storage itself, not from the browser
-  const { data: files } = await db.storage.from("audio").list(bookId, { search: `${chapterId}.mp3`, limit: 1 });
-  const file = files?.find((f) => f.name === `${chapterId}.mp3`);
+  const { data: files } = await db.storage.from("audio").list(bookId, { search: name, limit: 5 });
+  const file = files?.find((f) => f.name === name);
   const bytes = Number((file?.metadata as { size?: number } | undefined)?.size ?? 0);
   if (!file || bytes <= 0) return { ok: false, error: "The upload didn't arrive. Try again." };
   const { error } = await db.from("chapter_audio").upsert({
-    chapter_id: chapterId, path, bytes,
+    chapter_id: chapterId, path, bytes, voice,
     duration_s: Math.max(0, Math.round(Number(info?.duration) || 0)),
-    voice: String(info?.voice ?? "").slice(0, 60),
-  });
+  }, { onConflict: "chapter_id,voice" });
   revalidatePath(`/write/${bookId}`);
   return error ? { ok: false, error: "Couldn't save the audio. Try again." } : { ok: true };
 }
 
-export async function removeAudio(bookId: string, chapterIds: string[]): Promise<AudioResult> {
+/** Removes the chosen chapters' narration in one voice, or in every voice when voice is "all". */
+export async function removeAudio(bookId: string, chapterIds: string[], voice: string): Promise<AudioResult> {
   const db = await admin();
   if (!db) return { ok: false, error: "Only admins can remove audio." };
   const ids = (Array.isArray(chapterIds) ? chapterIds : []).filter((x) => UUID.test(x));
-  if (!UUID.test(bookId) || !ids.length) return { ok: false, error: "Bad request." };
+  if (!UUID.test(bookId) || !ids.length || (voice !== "all" && !isVoice(voice))) return { ok: false, error: "Bad request." };
   const { data: mine } = await db.from("chapters").select("id").eq("book_id", bookId).in("id", ids);
   const ok = (mine ?? []).map((c) => c.id as string);
   if (!ok.length) return { ok: false, error: "Those chapters aren't in this book." };
-  await db.storage.from("audio").remove(ok.map((id) => audioPath(bookId, id)));
-  const { error } = await db.from("chapter_audio").delete().in("chapter_id", ok);
+  let q = db.from("chapter_audio").select("chapter_id, voice, path").in("chapter_id", ok);
+  if (voice !== "all") q = q.eq("voice", voice);
+  const { data: rows } = await q;
+  if (rows?.length) await db.storage.from("audio").remove(rows.map((r) => r.path as string));
+  let del = db.from("chapter_audio").delete().in("chapter_id", ok);
+  if (voice !== "all") del = del.eq("voice", voice);
+  const { error } = await del;
   revalidatePath(`/write/${bookId}`);
   return error ? { ok: false, error: "Couldn't remove it. Try again." } : { ok: true };
 }

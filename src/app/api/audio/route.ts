@@ -13,7 +13,8 @@ const TTL = 3600;
 
 export async function GET(request: NextRequest) {
   const c = request.nextUrl.searchParams.get("c") ?? "";
-  if (!UUID.test(c)) return NextResponse.json({ error: "bad request" }, { status: 400 });
+  const v = request.nextUrl.searchParams.get("v") ?? "";
+  if (!UUID.test(c) || (v && !/^[a-z]{2}_[a-z]+$/.test(v))) return NextResponse.json({ error: "bad request" }, { status: 400 });
 
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "local";
   const now = Date.now();
@@ -23,7 +24,9 @@ export async function GET(request: NextRequest) {
   } else hits.set(ip, { n: 1, t: now });
 
   const sb = await supabaseServer();
-  const { data: row } = await sb.from("chapter_audio").select("path").eq("chapter_id", c).maybeSingle();
+  let q = sb.from("chapter_audio").select("path").eq("chapter_id", c);
+  if (v) q = q.eq("voice", v);
+  const { data: row } = await q.limit(1).maybeSingle();
   if (!row) return NextResponse.json({ error: "not found" }, { status: 404 });
 
   const { data, error } = await supabaseAdmin().storage.from("audio").createSignedUrl(row.path, TTL);

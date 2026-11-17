@@ -14,6 +14,8 @@ import { ContinueButton } from "@/components/progress/ContinueButton";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ReadTick } from "@/components/progress/ReadTick";
 import { audioChapters } from "@/lib/audio-read";
+import { myAudioRequests } from "@/lib/requests";
+import { RequestAudio } from "@/components/social/RequestAudio";
 import { Headphones } from "lucide-react";
 import { isFollowing } from "@/lib/profiles";
 import { profileHref } from "@/lib/paths";
@@ -48,13 +50,16 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
   const book = await getBook(slug);
   if (!book) notFound();
   const me = await getMe();
-  const [soon, saved, following, like, withAudio] = await Promise.all([
+  const [soon, saved, following, like, withAudio, asked] = await Promise.all([
     !book.completed ? nextScheduled(book.id) : null,
     me ? getPlace(book.id) : null,
     me && !book.own ? isFollowing(me.id, book.author_id) : false,
     book.status === "published" ? likeState("book", book.id, me?.id ?? null) : null,
     audioChapters(book.chapters.map((c) => c.id)),
+    myAudioRequests(book.id, me?.id ?? null),
   ]);
+  const liveChapters = book.chapters.filter((c) => !c.draft);
+  const fullAudio = liveChapters.length > 0 && liveChapters.every((c) => withAudio.has(c.id));
   const first = book.chapters[0];
   const count = book.chapters.length;
   const draft = book.status !== "published";
@@ -131,6 +136,12 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
         <p className={s.after}>
           {book.completed ? "The End." : soon ? `Next chapter on ${fmtDay(soon)}.` : "More chapters coming soon."}
         </p>
+        {!draft && !book.own && liveChapters.length > 0 && !fullAudio && (
+          <div className={s.requestRow}>
+            <p>{withAudio.size ? "Some chapters have audio." : "No audiobook yet."} Tell us you&rsquo;d listen.</p>
+            <RequestAudio bookId={book.id} chapterId={null} userId={me?.id ?? null} initial={asked.book} />
+          </div>
+        )}
         {!book.own && !draft && (
           <p className={s.reportRow}><ReportButton target="book" id={book.id} userId={me?.id ?? null} what="this book" /></p>
         )}

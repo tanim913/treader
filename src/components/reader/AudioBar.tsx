@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Pause, Play, RotateCcw, RotateCw, X } from "lucide-react";
+import { voiceName } from "@/lib/voices";
 import s from "./AudioBar.module.css";
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
@@ -11,12 +12,22 @@ const fmt = (t: number) => {
   const sec = Math.floor(t % 60);
   return `${m}:${String(sec).padStart(2, "0")}`;
 };
-const KEY = (c: string) => `treader-listen:${c}`;
+const KEY = (c: string, v: string) => `treader-listen:${c}:${v}`;
+const VOICE_KEY = "treader-voice";
+
+function preferredVoice(voices: { voice: string }[]): string {
+  try {
+    const v = localStorage.getItem(VOICE_KEY);
+    if (v && voices.some((x) => x.voice === v)) return v;
+  } catch {}
+  return voices[0].voice;
+}
 
 /** The chapter's narration: a flat bar at the foot of the page. Remembers where you were in it. */
-export function AudioBar({ chapterId, duration, chapterTitle, bookTitle, author, coverUrl, lifted, onClose }: {
+export function AudioBar({ chapterId, voices, chapterTitle, bookTitle, author, coverUrl, lifted, onClose }: {
   chapterId: string;
-  duration: number;
+  /** the voices this chapter is narrated in */
+  voices: { voice: string; duration: number }[];
   chapterTitle: string;
   bookTitle: string;
   author: string;
@@ -28,9 +39,12 @@ export function AudioBar({ chapterId, duration, chapterTitle, bookTitle, author,
   const audio = useRef<HTMLAudioElement>(null);
   const [state, setState] = useState<"idle" | "loading" | "playing" | "paused" | "error">("idle");
   const [t, setT] = useState(0);
+  const [voice, setVoice] = useState(() => preferredVoice(voices));
+  const duration = voices.find((x) => x.voice === voice)?.duration ?? voices[0].duration;
   const [len, setLen] = useState(duration);
   const [speed, setSpeed] = useState(1);
   const loaded = useRef(false);
+  const pendingPlay = useRef(false);
   const [ready, setReady] = useState(false);
 
   const load = async () => {
@@ -39,12 +53,12 @@ export function AudioBar({ chapterId, duration, chapterTitle, bookTitle, author,
     if (loaded.current) return true;
     setState("loading");
     try {
-      const r = await fetch(`/api/audio?c=${chapterId}`, { cache: "no-store" });
+      const r = await fetch(`/api/audio?c=${chapterId}&v=${voice}`, { cache: "no-store" });
       if (!r.ok) throw new Error(String(r.status));
       const { url } = (await r.json()) as { url: string };
       el.src = url;
       let start = 0;
-      try { start = Number(localStorage.getItem(KEY(chapterId)) || 0); } catch {}
+      try { start = Number(localStorage.getItem(KEY(chapterId, voice)) || 0); } catch {}
       if (start > 5 && start < (duration || Infinity) - 10) el.currentTime = start;
       loaded.current = true;
       setReady(true);
@@ -83,10 +97,40 @@ export function AudioBar({ chapterId, duration, chapterTitle, bookTitle, author,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapterId]);
 
+  // after a voice change, carry on playing in the new voice
+  useEffect(() => {
+    if (!pendingPlay.current) return;
+    pendingPlay.current = false;
+    void play();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voice]);
+
   // stop when the bar closes or the chapter changes
   useEffect(() => () => { audio.current?.pause(); }, []);
 
-  const save = (time: number) => { try { localStorage.setItem(KEY(chapterId), String(Math.floor(time))); } catch {} };
+  const save = (time: number) => { try { localStorage.setItem(KEY(chapterId, voice), String(Math.floor(time))); } catch {} };
+
+  /** Changes the narrator, carrying on from the same point in the chapter. */
+  const switchVoice = () => {
+    const el = audio.current;
+    const i = voices.findIndex((x) => x.voice === voice);
+    const next = voices[(i + 1) % voices.length];
+    const share = el && len ? el.currentTime / len : 0;
+    const wasPlaying = state === "playing";
+    el?.pause();
+    if (el) save(el.currentTime);
+    try {
+      localStorage.setItem(VOICE_KEY, next.voice);
+      localStorage.setItem(KEY(chapterId, next.voice), String(Math.floor(share * next.duration)));
+    } catch {}
+    loaded.current = false;
+    setReady(false);
+    setT(share * next.duration);
+    setLen(next.duration);
+    setVoice(next.voice);
+    setState("idle");
+    if (wasPlaying) pendingPlay.current = true;
+  };
 
   return (
     <div className={`${s.bar} ${lifted ? s.lifted : ""}`} data-ui role="region" aria-label="Listen to this chapter">
@@ -115,6 +159,12 @@ export function AudioBar({ chapterId, duration, chapterTitle, bookTitle, author,
             <RotateCw size={20} strokeWidth={1.6} />
           </button>
           <span className={s.time} aria-live="off">{fmt(t)} / {fmt(len)}</span>
+          {voices.length > 1 && (
+            <button type="button" className={s.voice} onClick={switchVoice}
+              aria-label={`Voice: ${voiceName(voice)}. Change voice`}>
+              {voiceName(voice)}
+            </button>
+          )}
           <button type="button" className={s.speed} aria-label={`Speed ${speed} times. Change speed`}
             onClick={() => {
               const next = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length];
