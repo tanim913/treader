@@ -2,6 +2,7 @@
 
 Usage, from the bookforge repo root:
   .venv/bin/python -I ~/Desktop/treader/scripts/add_bookforge_chapters.py 8 9
+  (add --replace to refresh the text of a chapter that is still a draft there)
 Then ask the user before publishing (their standing rule). Reads the secret key
 from ~/Desktop/treader/.env.local; never prints it.
 """
@@ -21,7 +22,8 @@ def api(method, path, body=None, prefer="return=representation"):
         t = r.read().decode()
         return json.loads(t) if t else None
 
-numbers = [int(a) for a in sys.argv[1:]]
+REPLACE = "--replace" in sys.argv  # refresh the text of a chapter already on treader that is still a draft
+numbers = [int(a) for a in sys.argv[1:] if a != "--replace"]
 if not numbers:
     sys.exit("give chapter numbers, e.g. 8 9")
 book = api("GET", "books?slug=eq.%s&select=id" % BOOK_SLUG)[0]
@@ -30,8 +32,11 @@ cards = [json.load(open(f, encoding="utf-8")) for f in sorted(glob.glob(B + "out
 titles = dict((int(n), t.strip()) for n, t in re.findall(r"^## (\d+)\. ([^(\n]*)", open(B + "outline/chapters.md", encoding="utf-8").read(), re.M))
 
 for n in numbers:
-    if api("GET", "chapters?book_id=eq.%s&number=eq.%d&select=id" % (book["id"], n)):
-        print(n, "already in treader, skipped"); continue
+    have = api("GET", "chapters?book_id=eq.%s&number=eq.%d&select=id,status" % (book["id"], n))
+    if have and not REPLACE:
+        print(n, "already in treader, skipped (use --replace to refresh a draft)"); continue
+    if have and have[0]["status"] != "draft":
+        print(n, "is %s on treader; only drafts are replaced, skipped" % have[0]["status"]); continue
     scenes = [c for c in cards if c["chapter"] == n]
     if not all(state.get(c["id"], {}).get("final") for c in scenes):
         print(n, "not finished in BookForge, skipped"); continue
@@ -44,6 +49,12 @@ for n in numbers:
             if para:
                 content.append({"type": "paragraph", "content": [{"type": "text", "text": para}]})
                 words += len(para.split())
+    doc = {"type": "doc", "content": content}
+    if have:
+        cid = have[0]["id"]
+        api("PATCH", "chapters?id=eq.%s" % cid, {"title": titles[n], "word_count": words}, prefer="return=minimal")
+        api("PATCH", "chapter_bodies?chapter_id=eq.%s" % cid, {"content": doc}, prefer="return=minimal")
+        print(n, titles[n], words, "words, draft text replaced"); continue
     ch = api("POST", "chapters", {"book_id": book["id"], "number": n, "title": titles[n], "status": "draft", "word_count": words})[0]
-    api("POST", "chapter_bodies", {"chapter_id": ch["id"], "content": {"type": "doc", "content": content}}, prefer="return=minimal")
+    api("POST", "chapter_bodies", {"chapter_id": ch["id"], "content": doc}, prefer="return=minimal")
     print(n, titles[n], words, "words, added as a draft")
