@@ -87,7 +87,7 @@ async function Reports({ status, meId }: { status: "open" | "resolved" | "dismis
         return (
           <li key={r.id} className={s.item}>
             <p className={s.kind}>
-              {r.target_type}{t?.hidden ? <span className={s.flag}>hidden</span> : null}
+              {r.target_type[0].toUpperCase() + r.target_type.slice(1)}{t?.hidden ? <span className={s.flag}>hidden</span> : null}
               {t?.owner?.banned ? <span className={s.flag}>owner banned</span> : null}
             </p>
             {t ? (

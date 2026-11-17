@@ -48,7 +48,7 @@
 }
 
 .text [data-sel] {
-  background: var(--select);
+  background: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
 .text [data-flash] {
@@ -56,7 +56,7 @@
 }
 
 @keyframes flash {
-  0%, 35% { background: color-mix(in srgb, var(--gilt) 60%, transparent); }
+  0%, 35% { background: color-mix(in srgb, var(--pencil) 50%, transparent); }
   100% { background: var(--mark); }
 }
 
@@ -65,7 +65,7 @@
   position: absolute;
   width: 2px;
   margin-left: -1px;
-  background: var(--cloth-ink);
+  background: var(--ink);
   touch-action: none;
   cursor: ew-resize;
   z-index: 4;
@@ -79,7 +79,7 @@
   height: 12px;
   margin-left: -6px;
   border-radius: 50%;
-  background: var(--cloth-ink);
+  background: var(--ink);
 }
 
 .hStart::before { top: -11px; }

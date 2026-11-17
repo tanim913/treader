@@ -1,6 +1,6 @@
 .page {
   --cloth-ink: color-mix(in srgb, var(--cloth) 62%, var(--ink));
-  --mark: color-mix(in srgb, var(--cloth) 16%, transparent);
+  --mark: color-mix(in srgb, var(--pencil) 20%, transparent);
   position: relative;
   min-height: 100dvh;
   background: var(--paper);
@@ -90,26 +90,8 @@
   text-align: center;
 }
 
-.theEnd {
-  font-family: var(--font-read);
-  font-style: italic;
-  font-size: 1.35em;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.8em;
-}
-
-.theEnd::before,
-.theEnd::after {
-  content: "";
-  width: 2.2em;
-  height: 1px;
-  background: var(--ink-soft);
-}
-
 .stamp {
-  --stamp: var(--cloth-ink);
+  --stamp: var(--ink-soft);
   display: inline-grid;
   gap: 2px;
   padding: 10px 16px 9px;
@@ -242,13 +224,13 @@
 }
 
 :global(:root[data-theme="dark"]) .page {
-  --mark: color-mix(in srgb, var(--gilt) 20%, transparent);
+  --mark: color-mix(in srgb, var(--pencil) 34%, transparent);
   --cloth-ink: color-mix(in srgb, var(--cloth) 45%, var(--ink));
 }
 
 @media (prefers-color-scheme: dark) {
   :global(:root:not([data-theme])) .page {
-    --mark: color-mix(in srgb, var(--gilt) 20%, transparent);
+    --mark: color-mix(in srgb, var(--pencil) 34%, transparent);
     --cloth-ink: color-mix(in srgb, var(--cloth) 45%, var(--ink));
   }
 }

@@ -4,6 +4,7 @@ import { Bookmark, PenLine } from "lucide-react";
 import { APP_NAME } from "@/lib/brand";
 import { getMe } from "@/lib/auth";
 import { GuestImport } from "./GuestImport";
+import { SettingsSync } from "./reader/SettingsSync";
 import { profileHref } from "@/lib/paths";
 import s from "./SiteHeader.module.css";
 
@@ -37,6 +38,7 @@ async function Account() {
   return (
     <>
     <GuestImport userId={me.id} />
+    <SettingsSync userId={me.id} />
     <Link href={profileHref(me.handle)} className={s.avatar} aria-label={`Your profile, ${me.displayName}`}>
       {me.avatarUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

@@ -97,7 +97,7 @@
 .num {
   font-family: var(--font-read);
   font-size: 17px;
-  color: var(--ink-soft);
+  color: var(--pencil);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }

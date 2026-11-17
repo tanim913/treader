@@ -18,8 +18,7 @@
 
 .like:hover { background: var(--paper-deep); }
 .like:disabled { cursor: progress; }
-.like[aria-pressed="true"] { border-color: var(--ink); color: var(--danger); }
-.like[aria-pressed="true"] span { color: var(--ink); }
+.like[aria-pressed="true"] { border-color: var(--ink); color: var(--ink); }
 
 /* ---- report: a quiet text link */
 .report {

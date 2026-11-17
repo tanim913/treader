@@ -16,7 +16,8 @@ import { savePlace } from "@/lib/progress";
 import { SettingsSheet } from "./SettingsSheet";
 import { BookmarksSheet } from "./BookmarksSheet";
 import { ChapterText } from "./ChapterText";
-import { DEFAULT_READ, applyRead, applyTheme, loadRead, loadTheme, type ReadSettings, type Theme } from "./settings";
+import { DEFAULT_READ, applyRead, applyTheme, loadRead, loadTheme, pushAccountSettings, type ReadSettings, type Theme } from "./settings";
+import { SettingsSync } from "./SettingsSync";
 import { useProtection } from "./protection";
 import s from "./Reader.module.css";
 
@@ -178,6 +179,7 @@ export function Reader(p: ReaderProps) {
   return (
     <div ref={page} className={`${s.page} ${listening ? s.withPlayer : ""}`} style={{ "--cloth": cloth.cloth } as CSSProperties}>
       <div className={s.headband} aria-hidden="true" />
+      {p.userId && <SettingsSync userId={p.userId} />}
 
       <div className={`${s.bar} ${s.top} ${shown ? "" : s.hidden}`} inert={!shown}>
         <div className={s.barInner}>
@@ -225,7 +227,7 @@ export function Reader(p: ReaderProps) {
         {!p.textState && <footer ref={endRef} className={s.end}>
           {p.ending.kind === "end" && (
             <>
-              <p className={s.theEnd}>The End</p>
+              <div className={s.stamp}><strong>The End</strong></div>
               <p className={s.endNote}>You have finished {p.bookTitle}.</p>
             </>
           )}
@@ -305,8 +307,8 @@ export function Reader(p: ReaderProps) {
         ref={settings}
         theme={theme}
         read={read}
-        onTheme={(t) => { setTheme(t); applyTheme(t); }}
-        onRead={(r) => { setRead(r); applyRead(r); }}
+        onTheme={(t) => { setTheme(t); applyTheme(t); if (p.userId) void pushAccountSettings(p.userId); }}
+        onRead={(r) => { setRead(r); applyRead(r); if (p.userId) void pushAccountSettings(p.userId); }}
       />
       <BookmarksSheet ref={marksSheet} bookTitle={p.bookTitle} items={bookMarks} chapterHref={p.chapterHref} />
     </div>

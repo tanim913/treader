@@ -158,12 +158,10 @@
 }
 
 .sub {
-  font-family: var(--font-ui);
-  font-size: 13px;
+  font-family: var(--font-read);
+  font-size: 18px;
   font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  color: var(--ink);
   margin: var(--s6) 0 var(--s4);
 }
 
