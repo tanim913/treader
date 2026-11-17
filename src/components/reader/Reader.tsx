@@ -35,6 +35,8 @@ export type ReaderProps = {
   jumpTo?: number;
   /** offer to go back to this paragraph (where the reader stopped in this chapter) */
   offer?: number;
+  /** this chapter holds the reader's saved place: the ribbon hangs here */
+  placeHere?: boolean;
   bookTitle: string;
   bookHref: string;
   cloth: string;
@@ -101,6 +103,7 @@ export function Reader(p: ReaderProps) {
   const textReady = !p.textState && p.blocks.length > 0;
   const endRef = useRef<HTMLElement>(null);
   const [offerGone, setOfferGone] = useState(false);
+  const [readingHere, setReadingHere] = useState(false);
   const showOffer = textReady && p.offer !== undefined && !offerGone;
 
   const toPara = (n: number, smooth: boolean) => {
@@ -142,6 +145,7 @@ export function Reader(p: ReaderProps) {
         if (Math.abs(window.scrollY - startY) < 200) return;
         armed = true;
         setOfferGone(true);
+        setReadingHere(true);
       }
       window.clearTimeout(timer);
       timer = window.setTimeout(save, 1200);
@@ -189,8 +193,12 @@ export function Reader(p: ReaderProps) {
       </div>
 
       <article className={s.article} onClick={onTap} data-protected>
+        {/* the book's silk ribbon hangs in the chapter where the reader stopped; hidden under the controls */}
+        {(p.placeHere || readingHere) && (
+          <span className={`${s.chapterRibbon} ${shown ? s.ribbonAway : ""}`} aria-hidden="true" />
+        )}
         <header className={s.head}>
-          <span className={s.number}>Chapter {p.chapterNumber}</span>
+          <span className={s.number}><span className="sr-only">Chapter </span>{p.chapterNumber}</span>
           <h1 className={s.title}>{p.chapterTitle}</h1>
         </header>
         <div ref={textBox} className={s.veilable}>

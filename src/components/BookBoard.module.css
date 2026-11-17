@@ -58,12 +58,10 @@
 
 .gilt {
   color: var(--gilt);
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .blind {
   color: color-mix(in srgb, var(--cloth) 30%, #1a120a);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .title {

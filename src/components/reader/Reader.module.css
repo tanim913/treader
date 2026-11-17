@@ -13,9 +13,11 @@
 }
 
 .article {
+  position: relative;
   max-width: calc(var(--read-measure) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: var(--s7) max(var(--gutter), env(safe-area-inset-left)) calc(var(--s8) + env(safe-area-inset-bottom));
+  /* the top: the 56px controls bar clears the title when it is shown */
+  padding: calc(var(--s7) + 24px) max(var(--gutter), env(safe-area-inset-left)) calc(var(--s8) + env(safe-area-inset-bottom));
   font-family: var(--font-read-active, var(--font-read));
   font-size: var(--read-size);
   line-height: var(--read-leading);
@@ -24,18 +26,22 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* the chapter numeral sits in its own margin column, like the Contents rows */
 .head {
   position: relative;
+  display: grid;
+  grid-template-columns: 1.5em 1fr;
+  column-gap: 0.6em;
+  align-items: baseline;
   margin-bottom: 2.2em;
+  padding-right: 22px; /* clear of the ribbon */
 }
 
 .number {
-  display: block;
-  font-family: var(--font-ui);
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  font-family: var(--font-read);
+  font-size: 1.1em;
+  color: var(--pencil);
+  text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
@@ -45,20 +51,35 @@
   font-size: 1.65em;
   line-height: 1.15;
   letter-spacing: -0.01em;
-  margin: 0.35em 0 0;
+  margin: 0;
+  text-wrap: balance;
 }
 
-/* wide screens: the chapter number hangs in its own margin column */
+/* wide screens: the numeral hangs outside the text column */
 @media (min-width: 900px) {
+  .head { display: block; padding-right: 0; }
   .number {
     position: absolute;
-    right: calc(100% + 2.5em);
-    top: 0.55em;
+    right: calc(100% + 1.4em);
+    top: 0.42em;
     white-space: nowrap;
-    text-align: right;
   }
-  .title { margin-top: 0; }
 }
+
+/* the silk ribbon: flat cloth, notched at the end, hanging from the headband */
+.chapterRibbon {
+  position: absolute;
+  top: 0;
+  right: max(var(--gutter), env(safe-area-inset-right));
+  width: 11px;
+  height: 88px;
+  background: var(--cloth);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%);
+  pointer-events: none;
+  transition: opacity 0.2s linear;
+}
+
+.ribbonAway { opacity: 0; }
 
 /* end of chapter marks */
 .end {

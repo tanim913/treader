@@ -145,3 +145,8 @@
 
 .actions .likeBtn { min-height: 48px; padding: 0 18px; border-color: var(--ink); font-size: 16px; }
 .reportRow { margin: var(--s6) 0 0; }
+
+@media (max-width: 559px) {
+  .actions > .primary { flex: 1 0 100%; }
+  .actions > .btn:not(.primary), .actions .likeBtn, .actions .followBtn { padding: 0 16px; min-width: 0; }
+}

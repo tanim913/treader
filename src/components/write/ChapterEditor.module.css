@@ -255,7 +255,7 @@
   background: var(--paper);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 18px 40px -20px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--rule);
 }
 
 .phone { max-width: 390px; --read-size: 18px; --gutter: 16px; }

@@ -10,9 +10,9 @@ type Saved = { chapterId: string; paragraph: number } | null;
 
 /** Fetches the chapter text after the page loads, so it is never in the page source.
  *  `saved` is the signed-in reader's place in this book; guests' comes from this browser. */
-export function ReaderLoader({ saved, ...props }: Omit<ReaderProps, "blocks" | "textState" | "jumpTo" | "offer"> & { saved: Saved }) {
+export function ReaderLoader({ saved, ...props }: Omit<ReaderProps, "blocks" | "textState" | "jumpTo" | "offer" | "placeHere"> & { saved: Saved }) {
   const [text, setText] = useState<{ k: number; blocks: Block[] } | null>(null);
-  const [place, setPlace] = useState<{ jumpTo?: number; offer?: number }>({});
+  const [place, setPlace] = useState<{ jumpTo?: number; offer?: number; placeHere?: boolean }>({});
   const [failed, setFailed] = useState(false);
   const { chapterId, bookId, userId } = props;
 
@@ -25,11 +25,12 @@ export function ReaderLoader({ saved, ...props }: Omit<ReaderProps, "blocks" | "
         if (!alive) return;
         setText(d);
         // a Continue link says where to open; otherwise offer the saved place in this chapter
-        const hash = /^#p-(\d+)$/.exec(window.location.hash);
-        if (hash) { setPlace({ jumpTo: Number(hash[1]) }); return; }
-        if (window.location.hash) return; // a bookmark link (#bm-…) jumps on its own
         const mine = userId ? saved : readLocalPlaces().find((x) => x.bookId === bookId) ?? null;
-        if (mine && mine.chapterId === chapterId && mine.paragraph >= 2) setPlace({ offer: mine.paragraph });
+        const placeHere = mine?.chapterId === chapterId;
+        const hash = /^#p-(\d+)$/.exec(window.location.hash);
+        if (hash) { setPlace({ jumpTo: Number(hash[1]), placeHere: true }); return; }
+        if (window.location.hash) { setPlace({ placeHere }); return; } // a bookmark link (#bm-…) jumps on its own
+        setPlace(placeHere && mine && mine.paragraph >= 2 ? { offer: mine.paragraph, placeHere } : { placeHere });
       })
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };

@@ -190,3 +190,6 @@ img {
   white-space: nowrap;
   border: 0;
 }
+
+/* a graphite tick on chapters already read */
+.tick { display: inline-block; margin-left: 8px; color: var(--pencil); vertical-align: 1px; }

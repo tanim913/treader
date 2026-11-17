@@ -102,10 +102,9 @@
   width: min(330px, calc(100vw - 24px));
   transform: translate(calc(-50% + var(--shift, 0px)), 0);
   padding: var(--s3);
-  border: 1px solid var(--rule);
+  border: 1px solid var(--ink-soft);
   border-radius: 12px;
-  background: var(--paper);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08), 0 14px 32px -12px rgba(0, 0, 0, 0.4);
+  background: var(--paper-deep);
   font-family: var(--font-ui);
   font-size: 15px;
   line-height: 1.4;
@@ -137,7 +136,7 @@
   padding: 10px 12px;
   border: 1px solid var(--rule);
   border-radius: 8px;
-  background: var(--paper-deep);
+  background: var(--paper);
   color: var(--ink);
   font: 16px/1.4 var(--font-ui); /* 16px stops iOS zooming in */
 }
@@ -167,11 +166,11 @@
 .popBtn:hover { background: var(--paper-deep); }
 
 .popSave {
-  background: var(--cloth-ink);
+  background: var(--ink);
   color: var(--paper);
 }
 
-.popSave:hover { background: var(--cloth-ink); filter: brightness(1.1); }
+.popSave:hover { background: var(--ink); filter: brightness(1.25); }
 
 .popDanger { color: var(--danger); padding-left: 4px; }
 

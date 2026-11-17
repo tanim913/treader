@@ -12,6 +12,7 @@ import { getMe } from "@/lib/auth";
 import { getPlace } from "@/lib/places";
 import { ContinueButton } from "@/components/progress/ContinueButton";
 import { FollowButton } from "@/components/profile/FollowButton";
+import { ReadTick } from "@/components/progress/ReadTick";
 import { isFollowing } from "@/lib/profiles";
 import { profileHref } from "@/lib/paths";
 import { likeState } from "@/lib/social";
@@ -99,7 +100,7 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
             {like && <LikeButton kind="book" id={book.id} userId={me?.id ?? null} liked={like.liked} count={like.count} className={s.likeBtn} />}
             {!book.own && (
               <FollowButton authorId={book.author_id} authorName={book.author.display_name}
-                userId={me?.id ?? null} initial={following} quiet className={s.followBtn} />
+                userId={me?.id ?? null} initial={following} quiet className={s.followBtn} label="writer" />
             )}
           </div>
         </div>
@@ -112,7 +113,10 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
             <li key={c.id}>
               <Link href={`/b/${book.slug}/${c.number}`} className={s.row}>
                 <span className={s.num}>{c.number}</span>
-                <span className={s.chTitle}>{c.title}{c.draft && <span className={s.draftPill}>Draft</span>}</span>
+                <span className={s.chTitle}>
+                  {c.title}{c.draft && <span className={s.draftPill}>Draft</span>}
+                  <ReadTick bookId={book.id} number={c.number} saved={saved?.chapterNumber ?? null} signedIn={!!me} />
+                </span>
                 <span className={s.mins}>{minutesFor(c.word_count)} min</span>
               </Link>
             </li>

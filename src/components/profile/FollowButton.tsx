@@ -7,7 +7,7 @@ import { supabaseBrowser } from "@/lib/supabase/client";
 import s from "./profile.module.css";
 
 /** Follow or unfollow a writer. Guests are sent to sign in, then back here. */
-export function FollowButton({ authorId, authorName, userId, initial, className, quiet = false }: {
+export function FollowButton({ authorId, authorName, userId, initial, className, quiet = false, label }: {
   authorId: string;
   authorName: string;
   userId: string | null;
@@ -15,7 +15,10 @@ export function FollowButton({ authorId, authorName, userId, initial, className,
   className?: string;
   /** an outline button, for pages where another button is the main action */
   quiet?: boolean;
+  /** what is followed, shown on the button ("Follow writer"); plain "Follow" when omitted */
+  label?: string;
 }) {
+  const word = (on: boolean) => `${on ? "Following" : "Follow"}${label ? ` ${label}` : ""}`;
   const [on, setOn] = useState(initial);
   const [problem, setProblem] = useState(false);
   const [pending, start] = useTransition();
@@ -24,7 +27,7 @@ export function FollowButton({ authorId, authorName, userId, initial, className,
   const cls = `${s.follow} ${on || quiet ? s.following : ""} ${className ?? ""}`;
 
   if (!userId) {
-    return <Link href={`/login?next=${encodeURIComponent(path)}`} className={cls}>Follow</Link>;
+    return <Link href={`/login?next=${encodeURIComponent(path)}`} className={cls}>{word(false)}</Link>;
   }
 
   const toggle = () => {
@@ -45,7 +48,7 @@ export function FollowButton({ authorId, authorName, userId, initial, className,
     <>
       <button type="button" className={cls} aria-pressed={on} disabled={pending} onClick={toggle}
         aria-label={on ? `Following ${authorName}. Tap to unfollow` : `Follow ${authorName}`}>
-        {on ? "Following" : "Follow"}
+        {word(on)}
       </button>
       {problem && <span className={s.problem} role="status">Couldn&rsquo;t update. Try again.</span>}
     </>
