@@ -1,0 +1,537 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T06:12:26+00:00",
+  "title": "Design System: treader",
+  "extensions": {
+    "colorMeta": {
+      "paper": {
+        "role": "neutral",
+        "displayName": "Warm Paper",
+        "canonical": "oklch(95.3% 0.013 87)",
+        "tonalRamp": [
+          "oklch(15% 0.003 87)",
+          "oklch(26% 0.006 87)",
+          "oklch(38% 0.009 87)",
+          "oklch(49% 0.011 87)",
+          "oklch(61% 0.011 87)",
+          "oklch(72% 0.009 87)",
+          "oklch(84% 0.006 87)",
+          "oklch(95% 0.003 87)"
+        ],
+        "themes": {
+          "sepia": "#ebdfc6",
+          "dark": "#171614"
+        }
+      },
+      "paper-deep": {
+        "role": "neutral",
+        "displayName": "Endpaper",
+        "canonical": "oklch(92.3% 0.019 86)",
+        "tonalRamp": [
+          "oklch(15% 0.005 86)",
+          "oklch(26% 0.009 86)",
+          "oklch(38% 0.013 86)",
+          "oklch(49% 0.017 86)",
+          "oklch(61% 0.017 86)",
+          "oklch(72% 0.013 86)",
+          "oklch(84% 0.009 86)",
+          "oklch(95% 0.005 86)"
+        ],
+        "themes": {
+          "sepia": "#e1d3b6",
+          "dark": "#100f0e"
+        }
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Printer's Ink",
+        "canonical": "oklch(24.8% 0.008 85)",
+        "tonalRamp": [
+          "oklch(15% 0.002 85)",
+          "oklch(26% 0.004 85)",
+          "oklch(38% 0.005 85)",
+          "oklch(49% 0.007 85)",
+          "oklch(61% 0.007 85)",
+          "oklch(72% 0.005 85)",
+          "oklch(84% 0.004 85)",
+          "oklch(95% 0.002 85)"
+        ],
+        "themes": {
+          "sepia": "#33281b",
+          "dark": "#dcd5c8"
+        }
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(46.9% 0.016 82)",
+        "tonalRamp": [
+          "oklch(15% 0.004 82)",
+          "oklch(26% 0.007 82)",
+          "oklch(38% 0.011 82)",
+          "oklch(49% 0.014 82)",
+          "oklch(61% 0.014 82)",
+          "oklch(72% 0.011 82)",
+          "oklch(84% 0.007 82)",
+          "oklch(95% 0.004 82)"
+        ],
+        "themes": {
+          "sepia": "#5f4e38",
+          "dark": "#a39b8d"
+        }
+      },
+      "pencil": {
+        "role": "neutral",
+        "displayName": "Graphite",
+        "canonical": "oklch(52.6% 0.015 82)",
+        "tonalRamp": [
+          "oklch(15% 0.004 82)",
+          "oklch(26% 0.007 82)",
+          "oklch(38% 0.010 82)",
+          "oklch(49% 0.014 82)",
+          "oklch(61% 0.014 82)",
+          "oklch(72% 0.010 82)",
+          "oklch(84% 0.007 82)",
+          "oklch(95% 0.004 82)"
+        ],
+        "themes": {
+          "sepia": "#6e604c",
+          "dark": "#8f887c"
+        }
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "oklch(85.6% 0.022 86)",
+        "tonalRamp": [
+          "oklch(15% 0.006 86)",
+          "oklch(26% 0.010 86)",
+          "oklch(38% 0.015 86)",
+          "oklch(49% 0.020 86)",
+          "oklch(61% 0.020 86)",
+          "oklch(72% 0.015 86)",
+          "oklch(84% 0.010 86)",
+          "oklch(95% 0.006 86)"
+        ],
+        "themes": {
+          "sepia": "#cdbd9c",
+          "dark": "#2f2c28"
+        }
+      },
+      "gilt": {
+        "role": "secondary",
+        "displayName": "Stamping Gilt",
+        "canonical": "oklch(73.1% 0.115 85)",
+        "tonalRamp": [
+          "oklch(15% 0.031 85)",
+          "oklch(26% 0.055 85)",
+          "oklch(38% 0.079 85)",
+          "oklch(49% 0.103 85)",
+          "oklch(61% 0.103 85)",
+          "oklch(72% 0.079 85)",
+          "oklch(84% 0.055 85)",
+          "oklch(95% 0.031 85)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Indigo Focus",
+        "canonical": "oklch(32.3% 0.076 272)",
+        "tonalRamp": [
+          "oklch(15% 0.021 272)",
+          "oklch(26% 0.036 272)",
+          "oklch(38% 0.052 272)",
+          "oklch(49% 0.068 272)",
+          "oklch(61% 0.068 272)",
+          "oklch(72% 0.052 272)",
+          "oklch(84% 0.036 272)",
+          "oklch(95% 0.021 272)"
+        ],
+        "themes": {
+          "dark": "#c9a24a"
+        }
+      },
+      "danger": {
+        "role": "neutral",
+        "displayName": "Oxblood Warning",
+        "canonical": "oklch(43.9% 0.138 30)",
+        "tonalRamp": [
+          "oklch(15% 0.038 30)",
+          "oklch(26% 0.066 30)",
+          "oklch(38% 0.095 30)",
+          "oklch(49% 0.124 30)",
+          "oklch(61% 0.124 30)",
+          "oklch(72% 0.095 30)",
+          "oklch(84% 0.066 30)",
+          "oklch(95% 0.038 30)"
+        ],
+        "themes": {
+          "dark": "#e0806f"
+        }
+      },
+      "cloth-oxblood": {
+        "role": "primary",
+        "displayName": "Oxblood cloth",
+        "canonical": "oklch(36.1% 0.109 19)",
+        "tonalRamp": [
+          "oklch(15% 0.030 19)",
+          "oklch(26% 0.052 19)",
+          "oklch(38% 0.075 19)",
+          "oklch(49% 0.098 19)",
+          "oklch(61% 0.098 19)",
+          "oklch(72% 0.075 19)",
+          "oklch(84% 0.052 19)",
+          "oklch(95% 0.030 19)"
+        ]
+      },
+      "cloth-bottle": {
+        "role": "primary",
+        "displayName": "Bottle green cloth",
+        "canonical": "oklch(36.0% 0.054 165)",
+        "tonalRamp": [
+          "oklch(15% 0.015 165)",
+          "oklch(26% 0.026 165)",
+          "oklch(38% 0.037 165)",
+          "oklch(49% 0.048 165)",
+          "oklch(61% 0.048 165)",
+          "oklch(72% 0.037 165)",
+          "oklch(84% 0.026 165)",
+          "oklch(95% 0.015 165)"
+        ]
+      },
+      "cloth-indigo": {
+        "role": "primary",
+        "displayName": "Indigo cloth",
+        "canonical": "oklch(32.3% 0.076 272)",
+        "tonalRamp": [
+          "oklch(15% 0.021 272)",
+          "oklch(26% 0.036 272)",
+          "oklch(38% 0.052 272)",
+          "oklch(49% 0.068 272)",
+          "oklch(61% 0.068 272)",
+          "oklch(72% 0.052 272)",
+          "oklch(84% 0.036 272)",
+          "oklch(95% 0.021 272)"
+        ]
+      },
+      "cloth-ochre": {
+        "role": "primary",
+        "displayName": "Ochre cloth (blind stamp)",
+        "canonical": "oklch(59.8% 0.116 74)",
+        "tonalRamp": [
+          "oklch(15% 0.032 74)",
+          "oklch(26% 0.056 74)",
+          "oklch(38% 0.080 74)",
+          "oklch(49% 0.104 74)",
+          "oklch(61% 0.104 74)",
+          "oklch(72% 0.080 74)",
+          "oklch(84% 0.056 74)",
+          "oklch(95% 0.032 74)"
+        ]
+      },
+      "cloth-slate": {
+        "role": "primary",
+        "displayName": "Slate cloth",
+        "canonical": "oklch(40.2% 0.025 244)",
+        "tonalRamp": [
+          "oklch(15% 0.007 244)",
+          "oklch(26% 0.012 244)",
+          "oklch(38% 0.017 244)",
+          "oklch(49% 0.022 244)",
+          "oklch(61% 0.022 244)",
+          "oklch(72% 0.017 244)",
+          "oklch(84% 0.012 244)",
+          "oklch(95% 0.007 244)"
+        ]
+      },
+      "cloth-rust": {
+        "role": "primary",
+        "displayName": "Rust cloth",
+        "canonical": "oklch(46.2% 0.122 39)",
+        "tonalRamp": [
+          "oklch(15% 0.033 39)",
+          "oklch(26% 0.058 39)",
+          "oklch(38% 0.084 39)",
+          "oklch(49% 0.109 39)",
+          "oklch(61% 0.109 39)",
+          "oklch(72% 0.084 39)",
+          "oklch(84% 0.058 39)",
+          "oklch(95% 0.033 39)"
+        ]
+      },
+      "cloth-plum": {
+        "role": "primary",
+        "displayName": "Plum cloth",
+        "canonical": "oklch(34.3% 0.069 335)",
+        "tonalRamp": [
+          "oklch(15% 0.019 335)",
+          "oklch(26% 0.033 335)",
+          "oklch(38% 0.047 335)",
+          "oklch(49% 0.062 335)",
+          "oklch(61% 0.062 335)",
+          "oklch(72% 0.047 335)",
+          "oklch(84% 0.033 335)",
+          "oklch(95% 0.019 335)"
+        ]
+      },
+      "cloth-teal": {
+        "role": "primary",
+        "displayName": "Teal cloth",
+        "canonical": "oklch(40.7% 0.054 204)",
+        "tonalRamp": [
+          "oklch(15% 0.015 204)",
+          "oklch(26% 0.026 204)",
+          "oklch(38% 0.037 204)",
+          "oklch(49% 0.049 204)",
+          "oklch(61% 0.049 204)",
+          "oklch(72% 0.037 204)",
+          "oklch(84% 0.026 204)",
+          "oklch(95% 0.015 204)"
+        ]
+      },
+      "select": {
+        "role": "secondary",
+        "displayName": "Gilt Selection",
+        "canonical": "rgba(201, 162, 74, 0.32)",
+        "themes": {
+          "sepia": "rgba(143, 59, 30, 0.22)",
+          "dark": "rgba(201, 162, 74, 0.28)"
+        },
+        "tonalRamp": [
+          "oklch(15% 0.031 85)",
+          "oklch(26% 0.055 85)",
+          "oklch(38% 0.079 85)",
+          "oklch(49% 0.103 85)",
+          "oklch(61% 0.103 85)",
+          "oklch(72% 0.079 85)",
+          "oklch(84% 0.055 85)",
+          "oklch(95% 0.031 85)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Book title on the book page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page titles in Operate views and home."
+      },
+      "chapter-title": {
+        "displayName": "Chapter title",
+        "purpose": "Chapter head in the reader; scales with the reader's size."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section headings (Contents, profile sections); sheet titles at 19px."
+      },
+      "body-read": {
+        "displayName": "Reading text",
+        "purpose": "Chapter text; 19px from 768px; reader-adjustable size, leading 1.45/1.62/1.8, serif or sans; drawn in cipher fonts when protected."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "Book titles on cloth boards only, gilt or blind; author line 10-12px at 0.14em."
+      },
+      "body-ui": {
+        "displayName": "Interface body",
+        "purpose": "Interface text and fields."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Buttons, nav links, bar titles."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Counts, dates, reading time; tabular numerals."
+      }
+    },
+    "shadows": [
+      {
+        "name": "board-shadow",
+        "value": "0 1px 1px rgba(35, 33, 29, 0.18), 0 6px 14px -6px rgba(35, 33, 29, 0.35)",
+        "purpose": "The board's edge: the only shadow in the system. Dark theme: 0 1px 1px rgba(0,0,0,0.5), 0 8px 18px -8px rgba(0,0,0,0.8)."
+      },
+      {
+        "name": "board-hover",
+        "value": "var(--board-shadow), 0 14px 24px -14px rgba(0, 0, 0, 0.45)",
+        "purpose": "Board lift on hover-capable devices, with translateY(-3px)."
+      },
+      {
+        "name": "sheet-scrim",
+        "value": "rgba(20, 18, 15, 0.35)",
+        "purpose": "Backdrop behind modal sheets; the sheet itself stays flat."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Bars sliding in (0.32s), sheets rising (0.36s), board lift (0.35s), slip and popup entrances."
+      },
+      {
+        "name": "fade-linear",
+        "value": "0.2s linear",
+        "purpose": "Ribbon fading while controls show; privacy veil blur."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "All animation and transition durations collapse under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "shelf-3",
+        "value": "560px"
+      },
+      {
+        "name": "book-hero",
+        "value": "720px"
+      },
+      {
+        "name": "tablet",
+        "value": "768px"
+      },
+      {
+        "name": "hang-numeral",
+        "value": "900px"
+      },
+      {
+        "name": "shelf-4",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action in a view: an ink pill.",
+      "html": "<button class=\"ds-btn-primary\">Start reading</button>",
+      "css": ".ds-btn-primary { min-height: 44px; padding: 0 20px; border: 0; border-radius: 999px; background: var(--ink, #23211d); color: var(--paper, #f3efe6); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; } .ds-btn-primary:hover { filter: brightness(1.25); } .ds-btn-primary:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Secondary actions: a hairline or ink outline pill that fills with endpaper on hover.",
+      "html": "<button class=\"ds-btn-secondary\">Share</button>",
+      "css": ".ds-btn-secondary { min-height: 44px; padding: 0 18px; border: 1px solid var(--ink, #23211d); border-radius: 999px; background: transparent; color: var(--ink, #23211d); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; } .ds-btn-secondary:hover { background: var(--paper-deep, #ebe5d8); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Report Link",
+      "kind": "button",
+      "refersTo": "link-report",
+      "description": "Report and other quiet actions: underlined soft-ink text, 44px tall.",
+      "html": "<button class=\"ds-report\">Report this chapter</button>",
+      "css": ".ds-report { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--ink-soft, #5f5a51); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 14px; text-decoration: underline; text-decoration-color: var(--rule, #d6cfc0); text-underline-offset: 3px; cursor: pointer; } .ds-report:hover { color: var(--ink, #23211d); } .ds-report:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Comments, notes and forms: endpaper field with a hairline, 16px sans.",
+      "html": "<textarea class=\"ds-field\" placeholder=\"Add a comment\"></textarea>",
+      "css": ".ds-field { width: 100%; min-height: 64px; padding: 10px 12px; border: 1px solid var(--rule, #d6cfc0); border-radius: 10px; background: var(--paper-deep, #ebe5d8); color: var(--ink, #23211d); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 16px; line-height: 1.45; resize: vertical; } .ds-field:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 1px; }"
+    },
+    {
+      "name": "Site Header",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky paper header with a hairline, the name in Literata, 44px pill links.",
+      "html": "<header class=\"ds-header\"><a class=\"ds-mark\" href=\"#\">treader</a><nav class=\"ds-nav\"><a class=\"ds-navlink\" href=\"#\">Bookmarks</a><a class=\"ds-navlink ds-navlink-primary\" href=\"#\">Write</a></nav></header>",
+      "css": ".ds-header { display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px; background: var(--paper, #f3efe6); border-bottom: 1px solid var(--rule, #d6cfc0); } .ds-mark { font-family: var(--font-read, Literata, Georgia, serif); font-weight: 600; font-size: 21px; letter-spacing: -0.01em; color: var(--ink, #23211d); text-decoration: none; } .ds-nav { display: flex; gap: 4px; } .ds-navlink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; border-radius: 999px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 15px; color: var(--ink, #23211d); text-decoration: none; } .ds-navlink:hover { background: var(--paper-deep, #ebe5d8); } .ds-navlink-primary { border: 1px solid var(--ink, #23211d); } .ds-navlink:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Cloth Board",
+      "kind": "card",
+      "refersTo": "board",
+      "description": "A book on the shelf: flat cloth at 2:3, joint groove, gilt stamped title between rules; the only element with a shadow.",
+      "html": "<a class=\"ds-board\" href=\"#\"><span class=\"ds-cover\"><span class=\"ds-panel\"><span class=\"ds-stamp-title\">Without Papers</span><span class=\"ds-stamp-author\">The Author</span></span></span></a>",
+      "css": ".ds-board { display: block; width: 160px; text-decoration: none; } .ds-cover { position: relative; display: grid; place-items: center; aspect-ratio: 2 / 3; background: #6B1E26; border-radius: 2px 5px 5px 2px; box-shadow: var(--board-shadow, 0 1px 1px rgba(35,33,29,0.18), 0 6px 14px -6px rgba(35,33,29,0.35)); padding: 14% 12% 14% 17%; overflow: hidden; transition: transform 0.35s cubic-bezier(0.16,1,0.3,1); } .ds-cover::before { content: ''; position: absolute; inset: 0 auto 0 7%; width: 2px; background: rgba(0,0,0,0.22); } .ds-panel { position: relative; display: grid; gap: 12px; justify-items: center; text-align: center; width: 100%; padding: 16px 4px; border-block: 1px solid currentColor; color: var(--gilt, #c9a24a); } .ds-stamp-title { font-family: var(--font-read, Literata, Georgia, serif); font-weight: 600; font-size: 15px; line-height: 1.25; letter-spacing: 0.09em; text-transform: uppercase; } .ds-stamp-author { font-family: var(--font-read, Literata, Georgia, serif); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.85; } .ds-board:hover .ds-cover { transform: translateY(-3px); } .ds-board:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 4px; }"
+    },
+    {
+      "name": "Chapter Head with Headband and Ribbon",
+      "kind": "custom",
+      "refersTo": "ribbon",
+      "description": "6px cloth headband, notched silk ribbon at the saved place, pencil numeral in the margin column, Literata title.",
+      "html": "<div class=\"ds-chapter\"><div class=\"ds-headband\"></div><div class=\"ds-ribbon\"></div><div class=\"ds-head\"><span class=\"ds-num\">7</span><h1 class=\"ds-ch-title\">The Crossing</h1></div><p class=\"ds-read\">The text sits on plain paper in ink, eighteen pixels on a sixty-five character line.</p></div>",
+      "css": ".ds-chapter { position: relative; background: var(--paper, #f3efe6); color: var(--ink, #23211d); padding-bottom: 24px; } .ds-headband { height: 6px; background: #6B1E26; } .ds-ribbon { position: absolute; top: 0; right: 16px; width: 11px; height: 88px; background: #6B1E26; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 84%, 0 100%); } .ds-head { display: grid; grid-template-columns: 1.5em 1fr; column-gap: 0.6em; align-items: baseline; padding: 56px 38px 0 16px; font-family: var(--font-read, Literata, Georgia, serif); font-size: 18px; } .ds-num { font-size: 1.1em; color: var(--pencil, #6f6a61); text-align: right; font-variant-numeric: tabular-nums; } .ds-ch-title { margin: 0; font-weight: 500; font-size: 1.65em; line-height: 1.15; letter-spacing: -0.01em; } .ds-read { max-width: 34em; margin: 1.6em 16px 0; font-family: var(--font-read, Literata, Georgia, serif); font-size: 18px; line-height: 1.62; }"
+    },
+    {
+      "name": "Contents Row with Pencil Tick",
+      "kind": "custom",
+      "refersTo": "",
+      "description": "A Contents row: numeral in the margin column, Literata title, graphite SVG tick when read, hairline below.",
+      "html": "<a class=\"ds-row\" href=\"#\"><span class=\"ds-rnum\">3</span><span class=\"ds-rtitle\">Night Bus<span class=\"ds-tick\"><svg width=\"16\" height=\"12\" viewBox=\"0 0 16 12\" aria-hidden=\"true\"><path d=\"M1.5 6.8 C3 7.6 4.4 9 5.6 10.4 C7.6 6.9 10.6 3.4 14.6 1.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></span><span class=\"ds-rmeta\">12 min</span></a>",
+      "css": ".ds-row { display: grid; grid-template-columns: 2.4em 1fr auto; align-items: baseline; gap: 12px; padding: 16px 0; border-top: 1px solid var(--ink, #23211d); border-bottom: 1px solid var(--rule, #d6cfc0); color: var(--ink, #23211d); text-decoration: none; } .ds-rnum { font-family: var(--font-read, Literata, Georgia, serif); font-size: 17px; color: var(--ink-soft, #5f5a51); text-align: right; font-variant-numeric: tabular-nums; } .ds-rtitle { font-family: var(--font-read, Literata, Georgia, serif); font-size: 18px; line-height: 1.35; } .ds-row:hover .ds-rtitle { text-decoration: underline; text-decoration-color: var(--rule, #d6cfc0); } .ds-tick { display: inline-block; margin-left: 8px; color: var(--pencil, #6f6a61); vertical-align: 1px; } .ds-rmeta { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-size: 13px; color: var(--ink-soft, #5f5a51); font-variant-numeric: tabular-nums; } .ds-row:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    },
+    {
+      "name": "Bottom Sheet",
+      "kind": "custom",
+      "refersTo": "sheet",
+      "description": "Settings, bookmarks and report dialogs: a flat paper sheet with a grip and a hairline top, no shadow.",
+      "html": "<div class=\"ds-sheet\"><div class=\"ds-grip\"></div><h2 class=\"ds-sheet-title\">Reading settings</h2><div class=\"ds-seg\"><button class=\"ds-opt\" aria-pressed=\"true\">Serif</button><button class=\"ds-opt\" aria-pressed=\"false\">Sans</button></div></div>",
+      "css": ".ds-sheet { max-width: 480px; padding: 8px 24px 24px; border-top: 1px solid var(--rule, #d6cfc0); border-radius: 16px 16px 0 0; background: var(--paper, #f3efe6); color: var(--ink, #23211d); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-grip { width: 36px; height: 4px; border-radius: 2px; background: var(--rule, #d6cfc0); margin: 0 auto 16px; } .ds-sheet-title { font-family: var(--font-read, Literata, Georgia, serif); font-weight: 500; font-size: 19px; margin: 0 0 16px; } .ds-seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; } .ds-opt { min-height: 44px; border: 1px solid var(--rule, #d6cfc0); border-radius: 10px; background: transparent; color: inherit; font-size: 15px; cursor: pointer; } .ds-opt[aria-pressed='true'] { border-color: var(--ink, #23211d); box-shadow: inset 0 0 0 1px var(--ink, #23211d); } .ds-opt:focus-visible { outline: 2px solid var(--focus, #26305a); outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Bookcloth and Stamp",
+    "overview": "**Creative North Star: \"Bookcloth and Stamp\"**\n\nEvery book is a clothbound volume in its own flat colour, and reading happens on its plain paper pages. The library is a shelf of boards: 2:3 cloth rectangles with a groove at the joint, the title stamped in Literata capitals, gilt or blind. Open one and the colour retreats to the edges of the text block: a 6px headband, a silk ribbon at the saved place, a small swatch on the resume slip. The page itself is warm paper and dark ink, nothing else.\n\nThe system has two modes in one world. **Read** (the chapter reader and the book page) is still: controls hide until a tap, the ribbon fades while they are shown, the text sits at 18px on a 65-character measure. **Operate** (home, profiles, /me, /write, /admin) uses the same paper, ink and hairline rules, set mostly in the system sans, with ink pills for the one primary action. State is shown as a mark (a graphite pencil tick, an ink outline, an underline), not as a new hue.\n\nThe world is phone first: 16px gutters widening to 32px at 768px, 44px touch targets everywhere, bottom sheets, safe-area insets and dynamic viewport units. It refuses the feed of thumbnail cards on white and the blanket cream-and-serif page.",
+    "keyCharacteristics": [
+      "Colour only at the edges: boards, headband, ribbon, resume-slip swatch.",
+      "An achromatic reading column of paper and ink.",
+      "Literata for text and headings; the system sans for every control.",
+      "Flat surfaces with hairline rules; the board's edge is the only shadow.",
+      "Numerals hold one margin column; read chapters carry a pencil tick.",
+      "Light, sepia and dark themes swap paper and ink, never the cloth."
+    ],
+    "rules": [
+      {
+        "name": "The Edges Rule",
+        "body": "Colour lives on the boards, the headband, the ribbon and the resume-slip swatch. The reading column is paper and ink only.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mark Not Hue Rule",
+        "body": "State is shown with a mark (pencil tick, ink outline, inset ink ring, underline, ink underline on the current tab), not with a new colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Faces Rule",
+        "body": "Literata sets text and headings; the system sans sets controls. A control never borrows the book face, and the chapter text never takes the sans unless the reader chooses it.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Stamp Rule",
+        "body": "Board titles are Literata caps, letterspaced, gilt or blind, with no text-shadow or emboss effect.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Shadow Rule",
+        "body": "Only boards cast a shadow. Sheets, slips, popups and bars are flat paper with a hairline rule.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep every colour to the edges: board, 6px headband, 11×88px ribbon, resume-slip swatch.",
+      "**Do** set chapter text at 18px (19px from 768px), leading 1.62, on a 34em measure.",
+      "**Do** put numerals in one right-aligned margin column, tabular.",
+      "**Do** show state with a mark: pencil tick, ink outline, inset ink ring, underline.",
+      "**Do** make every target at least 44px and pad bars and sheets with safe-area insets.",
+      "**Do** use ink pills for the primary action, hairline or ink outline pills for secondary actions, and underlined soft-ink text for report links.",
+      "**Do** keep Literata for text and headings and the system sans for controls."
+    ],
+    "donts": [
+      "**Don't** put a shadow on anything but a board; sheets, slips and popups are flat with hairline rules.",
+      "**Don't** colour text in the reading column or use a hue to show state.",
+      "**Don't** add text-shadow, emboss or gradients to the stamped board titles or to the cloth.",
+      "**Don't** lay out books as thumbnail cards on white or a feed; books are boards on a shelf.",
+      "**Don't** show the reader controls or the ribbon while someone is reading; they return on a tap.",
+      "**Don't** hard-code the app name; it lives in `src/lib/brand.ts`."
+    ]
+  }
+}
