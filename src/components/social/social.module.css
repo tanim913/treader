@@ -1,0 +1,156 @@
+/* ---- like */
+.like {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 500 15px var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.like:hover { background: var(--paper-deep); }
+.like:disabled { cursor: progress; }
+.like[aria-pressed="true"] { border-color: var(--ink); color: var(--danger); }
+.like[aria-pressed="true"] span { color: var(--ink); }
+
+/* ---- report: a quiet text link */
+.report {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font: 14px var(--font-ui);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.report:hover { color: var(--ink); }
+
+.sheetBody { display: grid; gap: var(--s4); padding-top: var(--s3); font-size: 15px; }
+.sheetBody p { margin: 0; line-height: 1.5; }
+
+.reasons { margin: 0; padding: 0; border: 0; display: grid; gap: 2px; }
+.reasons legend { font-size: 13px; color: var(--ink-soft); margin-bottom: var(--s2); padding: 0; }
+
+.reason {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.reason input { width: 20px; height: 20px; margin: 0; accent-color: var(--ink); }
+
+.detailsLabel { font-size: 14px; color: var(--ink-soft); }
+
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper-deep);
+  color: var(--ink);
+  font: 16px/1.45 var(--font-ui); /* 16px stops iOS zooming in */
+  resize: vertical;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+.primaryBtn {
+  justify-self: start;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font: 500 15px var(--font-ui);
+  cursor: pointer;
+}
+
+.primaryBtn:disabled { opacity: 0.45; cursor: default; }
+
+.textBtn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  font: 14px var(--font-ui);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.textBtn:hover { color: var(--ink); }
+.danger { color: var(--danger); }
+.problem { margin: 0; font-size: 14px; color: var(--danger); }
+.muted { margin: 0; color: var(--ink-soft); font-size: 15px; }
+
+/* ---- comments */
+.comments {
+  display: grid;
+  gap: var(--s4);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.commentsHead {
+  margin: 0;
+  font-family: var(--font-read);
+  font-weight: 500;
+  font-size: 21px;
+}
+
+.count { color: var(--ink-soft); font-family: var(--font-ui); font-size: 15px; font-variant-numeric: tabular-nums; }
+
+.composer { display: grid; gap: var(--s2); }
+.composerRow { display: flex; justify-content: flex-end; align-items: center; gap: var(--s2); }
+
+.thread, .replies { list-style: none; margin: 0; padding: 0; }
+.thread > li { border-top: 1px solid var(--rule); padding: var(--s3) 0; }
+.replies { margin: var(--s2) 0 0 var(--s4); padding-left: var(--s3); border-left: 1px solid var(--rule); }
+.replies > li + li { margin-top: var(--s3); }
+
+.comment { display: grid; gap: 4px; }
+.commentHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--s2); }
+
+.who {
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 10px 0;
+  margin: -10px 0;
+}
+
+a.who:hover { text-decoration: underline; }
+.when { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.body { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.hiddenNote {
+  margin: 0;
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.commentActions { display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s1); margin-left: -8px; }

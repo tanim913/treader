@@ -4,6 +4,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Bookmark, ChevronLeft, ChevronRight, Type, X } from "lucide-react";
 import { ShareButton } from "@/components/ShareButton";
+import { LikeButton } from "@/components/social/LikeButton";
+import { ReportButton } from "@/components/social/ReportButton";
+import { Comments } from "@/components/social/Comments";
 import { clothOf } from "@/lib/cloth";
 import type { Block } from "@/lib/text";
 import { useBookmarkState } from "@/lib/bookmarks/store";
@@ -26,6 +29,8 @@ export type ReaderProps = {
   userId: string | null;
   /** the writer, for "Follow …" at the end of an unfinished book (null on the writer's own book) */
   author: { name: string; href: string } | null;
+  /** likes and comments, on published chapters only */
+  social: { likes: number; liked: boolean; chapterAuthorId: string } | null;
   /** scroll to this paragraph once the text is drawn (a Continue link) */
   jumpTo?: number;
   /** offer to go back to this paragraph (where the reader stopped in this chapter) */
@@ -223,6 +228,18 @@ export function Reader(p: ReaderProps) {
           )}
         </footer>}
       </article>
+
+      {p.social && !p.textState && (
+        <aside className={s.social} aria-label="Likes and comments">
+          <div className={s.socialRow}>
+            <LikeButton kind="chapter" id={p.chapterId} userId={p.userId} liked={p.social.liked} count={p.social.likes} />
+            {p.userId !== p.social.chapterAuthorId && (
+              <ReportButton target="chapter" id={p.chapterId} userId={p.userId} what="this chapter" />
+            )}
+          </div>
+          <Comments chapterId={p.chapterId} userId={p.userId} chapterAuthorId={p.social.chapterAuthorId} />
+        </aside>
+      )}
 
       <div className={`${s.bar} ${s.bottom} ${shown ? "" : s.hidden}`} inert={!shown}>
         <div className={s.progress} role="progressbar" aria-label="Progress through the book" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>

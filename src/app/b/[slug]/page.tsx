@@ -14,6 +14,9 @@ import { ContinueButton } from "@/components/progress/ContinueButton";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { isFollowing } from "@/lib/profiles";
 import { profileHref } from "@/lib/paths";
+import { likeState } from "@/lib/social";
+import { LikeButton } from "@/components/social/LikeButton";
+import { ReportButton } from "@/components/social/ReportButton";
 import s from "./book.module.css";
 
 export async function generateMetadata({ params }: PageProps<"/b/[slug]">): Promise<Metadata> {
@@ -42,10 +45,11 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
   const book = await getBook(slug);
   if (!book) notFound();
   const me = await getMe();
-  const [soon, saved, following] = await Promise.all([
+  const [soon, saved, following, like] = await Promise.all([
     !book.completed ? nextScheduled(book.id) : null,
     me ? getPlace(book.id) : null,
     me && !book.own ? isFollowing(me.id, book.author_id) : false,
+    book.status === "published" ? likeState("book", book.id, me?.id ?? null) : null,
   ]);
   const first = book.chapters[0];
   const count = book.chapters.length;
@@ -53,6 +57,9 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
 
   return (
     <>
+      {book.own && book.hidden_by_admin && (
+        <p className={s.draftNote}>The moderators have hidden this book, so readers can&rsquo;t see it. Only you can.</p>
+      )}
       {draft && <p className={s.draftNote}>Only you can see this book. Make it public from your writing dashboard.</p>}
       {!draft && book.own && book.chapters.some((c) => c.draft) && (
         <p className={s.draftNote}>Chapters marked Draft are visible only to you.</p>
@@ -89,6 +96,7 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
               <span className={s.meta}>The first chapter is on its way.</span>
             )}
             <ShareButton path={`/b/${book.slug}`} title={book.title} className={s.btn} />
+            {like && <LikeButton kind="book" id={book.id} userId={me?.id ?? null} liked={like.liked} count={like.count} className={s.likeBtn} />}
             {!book.own && (
               <FollowButton authorId={book.author_id} authorName={book.author.display_name}
                 userId={me?.id ?? null} initial={following} quiet className={s.followBtn} />
@@ -113,6 +121,9 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
         <p className={s.after}>
           {book.completed ? "The End." : soon ? `Next chapter on ${fmtDay(soon)}.` : "More chapters coming soon."}
         </p>
+        {!book.own && !draft && (
+          <p className={s.reportRow}><ReportButton target="book" id={book.id} userId={me?.id ?? null} what="this book" /></p>
+        )}
       </section>
     </>
   );

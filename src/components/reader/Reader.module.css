@@ -330,3 +330,16 @@
   padding: 12px 0;
   margin: -12px 0;
 }
+
+/* likes and comments, after the text: the same column, set in the interface face */
+.social {
+  max-width: calc(var(--read-measure) + 2 * var(--gutter));
+  margin: calc(-1 * var(--s6)) auto 0;
+  padding: var(--s5) max(var(--gutter), env(safe-area-inset-left)) calc(var(--s8) + env(safe-area-inset-bottom));
+  display: grid;
+  gap: var(--s6);
+  font-family: var(--font-ui);
+  border-top: 1px solid var(--rule);
+}
+
+.socialRow { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }

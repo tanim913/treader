@@ -142,3 +142,6 @@
 
 .shared { margin: var(--s1) 0 0; font-size: 15px; color: var(--ink-soft); }
 .shared .byLink { color: var(--ink); }
+
+.actions .likeBtn { min-height: 48px; padding: 0 18px; border-color: var(--ink); font-size: 16px; }
+.reportRow { margin: var(--s6) 0 0; }

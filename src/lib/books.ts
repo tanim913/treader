@@ -13,7 +13,7 @@ export async function getBook(slug: string) {
   const sb = await supabaseServer();
   const { data: book } = await sb
     .from("books")
-    .select("id, slug, title, blurb, cloth, cover_url, status, completed, author_id, original_author, author:profiles!books_author_id_fkey(display_name, handle)")
+    .select("id, slug, title, blurb, cloth, cover_url, status, completed, hidden_by_admin, author_id, original_author, author:profiles!books_author_id_fkey(display_name, handle)")
     .eq("slug", slug)
     .maybeSingle();
   if (!book) return null;

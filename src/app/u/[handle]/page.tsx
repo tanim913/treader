@@ -10,6 +10,8 @@ import { FollowButton } from "@/components/profile/FollowButton";
 import { EditProfile } from "@/components/profile/EditProfile";
 import { ShowReading } from "@/components/profile/ShowReading";
 import { BookmarkList } from "@/components/bookmarks/BookmarkList";
+import { ReportButton } from "@/components/social/ReportButton";
+import { ModButton } from "@/components/admin/ModButton";
 import { getMe } from "@/lib/auth";
 import { getMyPlaces } from "@/lib/places";
 import { profileHref } from "@/lib/paths";
@@ -84,11 +86,21 @@ async function ProfileView({ params }: { params: PageProps<"/u/[handle]">["param
               <form action="/auth/signout" method="post">
                 <button type="submit" className={`${s.follow} ${s.following}`}>Sign out</button>
               </form>
+              {me?.role === "admin" && <Link href="/admin" className={`${s.follow} ${s.following}`}>Moderation</Link>}
             </>
           ) : !p.banned ? (
             <FollowButton authorId={p.id} authorName={p.displayName} userId={me?.id ?? null} initial={following} />
           ) : null}
         </div>
+        {!own && (
+          <div className={s.actions}>
+            <ReportButton target="profile" id={p.id} userId={me?.id ?? null} what={`@${p.handle}`} />
+            {me?.role === "admin" && (
+              <ModButton act={{ kind: "ban", userId: p.id, ban: !p.banned }}
+                label={p.banned ? "Unban account" : "Ban account"} tone={p.banned ? "plain" : "danger"} />
+            )}
+          </div>
+        )}
       </header>
 
       <section className={s.section} aria-labelledby="books">
