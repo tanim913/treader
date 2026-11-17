@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { Bookmark, ChevronLeft, ChevronRight, Type, X } from "lucide-react";
+import { Bookmark, ChevronLeft, ChevronRight, Headphones, Type, X } from "lucide-react";
+import { AudioBar } from "./AudioBar";
 import { ShareButton } from "@/components/ShareButton";
 import { LikeButton } from "@/components/social/LikeButton";
 import { ReportButton } from "@/components/social/ReportButton";
@@ -29,6 +30,8 @@ export type ReaderProps = {
   userId: string | null;
   /** the writer, for "Follow …" at the end of an unfinished book (null on the writer's own book) */
   author: { name: string; href: string } | null;
+  /** this chapter's narration, when its book has audio switched on */
+  audio: { duration: number } | null;
   /** likes and comments, on published chapters only */
   social: { likes: number; liked: boolean; chapterAuthorId: string } | null;
   /** scroll to this paragraph once the text is drawn (a Continue link) */
@@ -104,6 +107,7 @@ export function Reader(p: ReaderProps) {
   const endRef = useRef<HTMLElement>(null);
   const [offerGone, setOfferGone] = useState(false);
   const [readingHere, setReadingHere] = useState(false);
+  const [listening, setListening] = useState(false);
   const showOffer = textReady && p.offer !== undefined && !offerGone;
 
   const toPara = (n: number, smooth: boolean) => {
@@ -171,7 +175,7 @@ export function Reader(p: ReaderProps) {
   const pct = Math.round((p.chapterNumber / p.chapterCount) * 100);
 
   return (
-    <div ref={page} className={s.page} style={{ "--cloth": cloth.cloth } as CSSProperties}>
+    <div ref={page} className={`${s.page} ${listening ? s.withPlayer : ""}`} style={{ "--cloth": cloth.cloth } as CSSProperties}>
       <div className={s.headband} aria-hidden="true" />
 
       <div className={`${s.bar} ${s.top} ${shown ? "" : s.hidden}`} inert={!shown}>
@@ -181,6 +185,12 @@ export function Reader(p: ReaderProps) {
           </Link>
           <span className={s.barTitle}>{p.bookTitle}</span>
           {p.sharePath && <ShareButton path={p.sharePath} title={`${p.bookTitle}: ${p.chapterTitle}`} className={s.icon} iconOnly label="Share this chapter" />}
+          {p.audio && (
+            <button className={s.icon} aria-label="Listen to this chapter" aria-pressed={listening}
+              onClick={() => setListening((v) => !v)}>
+              <Headphones size={20} strokeWidth={1.6} />
+            </button>
+          )}
           <button className={s.icon} aria-label="Reading settings" onClick={openSettings}>
             <Type size={20} strokeWidth={1.6} />
           </button>
@@ -268,7 +278,7 @@ export function Reader(p: ReaderProps) {
         </div>
       </div>
 
-      {showOffer && !shown && (
+      {showOffer && !shown && !listening && (
         <div className={s.resume} data-ui role="region" aria-label="Your place">
           <button type="button" className={s.resumeGo}
             onClick={() => { setOfferGone(true); toPara(p.offer!, true); }}>
@@ -279,6 +289,12 @@ export function Reader(p: ReaderProps) {
             <X size={18} strokeWidth={1.6} />
           </button>
         </div>
+      )}
+
+      {p.audio && listening && (
+        <AudioBar chapterId={p.chapterId} duration={p.audio.duration} chapterTitle={p.chapterTitle}
+          bookTitle={p.bookTitle} author={p.book.author} coverUrl={p.book.coverUrl} lifted={shown}
+          onClose={() => setListening(false)} />
       )}
 
       <SettingsSheet

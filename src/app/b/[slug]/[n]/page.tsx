@@ -7,6 +7,7 @@ import { getMe } from "@/lib/auth";
 import { minutesFor } from "@/lib/doc";
 import { getPlace } from "@/lib/places";
 import { likeState } from "@/lib/social";
+import { chapterAudio } from "@/lib/audio-read";
 
 export async function generateMetadata({ params }: PageProps<"/b/[slug]/[n]">): Promise<Metadata> {
   const { slug, n } = await params;
@@ -34,11 +35,12 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
   const prev = book.chapters[i - 1];
   const next = book.chapters[i + 1];
   const left = book.chapters.slice(i).reduce((a, c) => a + c.word_count, 0);
-  const [soon, saved, like] = await Promise.all([
+  const [soon, saved, like, audio] = await Promise.all([
     !next && !book.completed ? nextScheduled(book.id) : null,
     me ? getPlace(book.id) : null,
     // likes and comments belong to published chapters; a writer previewing a draft sees neither
     ch.draft ? null : likeState("chapter", ch.id, me?.id ?? null),
+    chapterAudio(ch.id),
   ]);
   const base = `/b/${book.slug}`;
 
@@ -51,6 +53,7 @@ async function Chapter({ params }: { params: PageProps<"/b/[slug]/[n]">["params"
       next={next && !next.draft ? { id: next.id, number: next.number, title: next.title } : null}
       userId={me?.id ?? null}
       author={book.own ? null : { name: book.author.display_name, href: `/@${book.author.handle}` }}
+      audio={audio}
       social={like ? { likes: like.count, liked: like.liked, chapterAuthorId: book.author_id } : null}
       saved={saved ? { chapterId: saved.chapterId, paragraph: saved.paragraph } : null}
       bookTitle={book.title}

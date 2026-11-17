@@ -252,3 +252,30 @@
   margin: 1px 0 0;
   accent-color: var(--ink);
 }
+
+/* ---- audio narration (admins) */
+.audioSwitch { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); }
+.audioLabel { margin: 0 0 2px; font-size: 16px; font-weight: 500; }
+
+.meter { height: 6px; border-radius: 3px; background: var(--paper-deep); overflow: hidden; box-shadow: inset 0 0 0 1px var(--rule); }
+.meter span { display: block; height: 100%; background: var(--ink); }
+
+.audioList { list-style: none; margin: var(--s2) 0 0; padding: 0; border-top: 1px solid var(--rule); }
+
+.audioRow {
+  display: grid;
+  grid-template-columns: 20px 2em 1fr auto;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 48px;
+  padding: var(--s1) 0;
+  border-bottom: 1px solid var(--rule);
+  cursor: pointer;
+}
+
+.audioRow input { width: 20px; height: 20px; margin: 0; accent-color: var(--ink); }
+.audioTitle { font-family: var(--font-read); font-size: 16px; line-height: 1.3; min-width: 0; overflow-wrap: anywhere; }
+.audioTitle .pill { margin-left: 8px; }
+.audioState { font-size: 13px; color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.disabledLabel { opacity: 0.5; pointer-events: none; }
+.audioRow .num { width: auto; font-size: 16px; }

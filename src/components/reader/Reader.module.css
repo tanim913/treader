@@ -364,3 +364,6 @@
 }
 
 .socialRow { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); }
+
+/* room at the foot for the narration bar */
+.withPlayer { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }

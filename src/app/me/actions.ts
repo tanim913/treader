@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getMe } from "@/lib/auth";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { supabaseServer } from "@/lib/supabase/server";
+import { removeBookAudio } from "@/lib/audio";
 
 export type DeleteState = { error?: string };
 
@@ -15,6 +16,8 @@ export async function deleteAccount(_: DeleteState, form: FormData): Promise<Del
   if (typed !== me.handle) return { error: `Type your handle, ${me.handle}, to confirm.` };
 
   const admin = supabaseAdmin();
+  const { data: books } = await admin.from("books").select("id").eq("author_id", me.id);
+  await removeBookAudio((books ?? []).map((b) => b.id as string)).catch(() => {});
   // uploaded images live in folders named after the user id
   for (const bucket of ["covers", "avatars"]) {
     const { data: files } = await admin.storage.from(bucket).list(me.id, { limit: 1000 });

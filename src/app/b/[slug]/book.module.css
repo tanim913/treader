@@ -150,3 +150,5 @@
   .actions > .primary { flex: 1 0 100%; }
   .actions > .btn:not(.primary), .actions .likeBtn, .actions .followBtn { padding: 0 16px; min-width: 0; }
 }
+
+.hasAudio { display: inline-block; margin-left: 8px; color: var(--ink-soft); vertical-align: -1px; }

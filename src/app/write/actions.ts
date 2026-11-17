@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { CLOTHS } from "@/lib/cloth";
 import { slugify, wordCount, type TNode } from "@/lib/doc";
+import { audioPath, removeBookAudio } from "@/lib/audio";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 export type Result = { error?: string; ok?: boolean };
 
@@ -77,8 +79,10 @@ export async function setBookFlags(bookId: string, flags: { status?: "draft" | "
 
 export async function deleteBook(bookId: string): Promise<Result> {
   const { sb } = await me();
-  const { error } = await sb.from("books").delete().eq("id", bookId);
+  const { data: gone, error } = await sb.from("books").delete().eq("id", bookId).select("id");
   if (error) return { error: "Couldn't delete the book." };
+  // only when a book of this writer's really went (row-level security deletes nothing otherwise)
+  if (gone?.length) await removeBookAudio([bookId]).catch(() => {});
   redirect("/write");
 }
 
@@ -130,8 +134,9 @@ export async function saveChapter(bookId: string, chapterId: string, s: ChapterS
 
 export async function deleteChapter(bookId: string, chapterId: string): Promise<Result> {
   const { sb } = await me();
-  const { error } = await sb.from("chapters").delete().eq("id", chapterId);
+  const { data: gone, error } = await sb.from("chapters").delete().eq("id", chapterId).eq("book_id", bookId).select("id");
   if (error) return { error: "Couldn't delete the chapter." };
+  if (gone?.length) await supabaseAdmin().storage.from("audio").remove([audioPath(bookId, chapterId)]).catch(() => {});
   redirect(`/write/${bookId}`);
 }
 

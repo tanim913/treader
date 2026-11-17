@@ -13,6 +13,8 @@ import { getPlace } from "@/lib/places";
 import { ContinueButton } from "@/components/progress/ContinueButton";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { ReadTick } from "@/components/progress/ReadTick";
+import { audioChapters } from "@/lib/audio-read";
+import { Headphones } from "lucide-react";
 import { isFollowing } from "@/lib/profiles";
 import { profileHref } from "@/lib/paths";
 import { likeState } from "@/lib/social";
@@ -46,11 +48,12 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
   const book = await getBook(slug);
   if (!book) notFound();
   const me = await getMe();
-  const [soon, saved, following, like] = await Promise.all([
+  const [soon, saved, following, like, withAudio] = await Promise.all([
     !book.completed ? nextScheduled(book.id) : null,
     me ? getPlace(book.id) : null,
     me && !book.own ? isFollowing(me.id, book.author_id) : false,
     book.status === "published" ? likeState("book", book.id, me?.id ?? null) : null,
+    audioChapters(book.chapters.map((c) => c.id)),
   ]);
   const first = book.chapters[0];
   const count = book.chapters.length;
@@ -116,6 +119,9 @@ async function Book({ params }: { params: PageProps<"/b/[slug]">["params"] }) {
                 <span className={s.chTitle}>
                   {c.title}{c.draft && <span className={s.draftPill}>Draft</span>}
                   <ReadTick bookId={book.id} number={c.number} saved={saved?.chapterNumber ?? null} signedIn={!!me} />
+                  {withAudio.has(c.id) && (
+                    <span className={s.hasAudio}><Headphones size={15} strokeWidth={1.6} aria-hidden="true" /><span className="sr-only">Has audio</span></span>
+                  )}
                 </span>
                 <span className={s.mins}>{minutesFor(c.word_count)} min</span>
               </Link>
